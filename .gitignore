@@ -1,0 +1,26 @@
+*.egg-info
+dist/
+build/
+docs/_build
+__pycache__/
+.cache
+*.sqlite3
+.tox/
+*.swp
+*.pyc
+.coverage*
+.pytest_cache
+TODO
+node_modules
+
+# Pipenv
+Pipfile
+Pipfile.lock
+
+# IDE and Tooling files
+.idea/*
+*~
+.vscode
+
+# macOS
+.DS_Store

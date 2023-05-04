@@ -1,0 +1,6 @@
+<!-- blog/post_detail.html -->
+{% extends "base.html" %} {% block content %}
+<h1>{{ post.title }}</h1>
+<p>{{ post.description }}</p>
+<a href="{% url 'post_list' %}">Back to Posts List</a>
+{% endblock %}
