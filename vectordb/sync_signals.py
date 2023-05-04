@@ -26,9 +26,9 @@ def sync_vectordb_on_create_update(sender, instance, created, **kwargs):
         # Save the instance to the Vector database if it doesn't exist, else update it
         vector = Vector.objects.get(content_type=content_type, object_id=instance.pk)
 
-        # Extract the text using the get_text method
-        text = instance.get_text()
-        metadata = instance.to_json()
+        # Extract the text using the get_vectordb_text method
+        text = instance.get_vectordb_text()
+        metadata = instance.get_vectordb_metadata()
         vector.metadata = metadata
 
         if text == vector.text:

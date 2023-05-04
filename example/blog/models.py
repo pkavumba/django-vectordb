@@ -8,8 +8,8 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
-    def get_text(self):
+    def get_vectordb_text(self):
         return f"{self.title} -- {self.description}"
 
-    def to_json(self):
+    def get_vectordb_metadata(self):
         return {"title": self.title, "description": self.description}

@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import logging
 import json
 import os
 import importlib
@@ -5,6 +8,7 @@ from django.conf import settings
 from django.core.serializers import serialize
 from django.db import models
 import numpy as np
+
 
 from .validators import validate_vector_data
 
@@ -19,6 +23,9 @@ try:
 
 except ImportError:
     has_celery = False
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 EMBEDDING_FN = getattr(settings, "EMBEDDING_FN", None)
 EMBEDDING_DIM = getattr(settings, "EMBEDDING_DIM", None)
@@ -55,15 +62,15 @@ def serializer(obj):
 
 def create_vector_from_instance(manager, instance):
     embedding_fn, embedding_dim = get_embedding_function()
-    if hasattr(instance, "get_text"):
-        text = instance.get_text()
+    if hasattr(instance, "get_vectordb_text"):
+        text = instance.get_vectordb_text()
     else:
         raise ValueError(
-            f"Object of class {instance.__class__.__name__} must have a get_text method."
+            f"Object of class {instance.__class__.__name__} must have a get_vectordb_text method."
         )
 
-    if hasattr(instance, "to_json"):
-        metadata = instance.to_json()
+    if hasattr(instance, "get_vectordb_metadata"):
+        metadata = instance.get_vectordb_metadata()
     else:
         metadata = serializer(instance)
 
@@ -87,7 +94,7 @@ def create_vector_from_text(
 ):
     embedding_fn, embedding_dim = get_embedding_function()
 
-    if embedding is not None and not has_celery:
+    if embedding is None and not has_celery:
         embedding = embedding_fn(text)
 
     validate_vector_data(
@@ -97,6 +104,8 @@ def create_vector_from_text(
         object_id=object_id,
         embedding=embedding,
     )
+
+    logging.warning(f"vector shape {embedding.shape}")
 
     vector = manager.create(
         text=text, metadata=metadata, embedding=embedding.tobytes(), object_id=object_id

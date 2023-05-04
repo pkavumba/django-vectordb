@@ -24,8 +24,8 @@ from .utils import (
 from .validators import validate_vector_data
 
 # Get an instance of a logger
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 
 EMBEDDING_FN = getattr(settings, "EMBEDDING_FN", None)
@@ -77,8 +77,6 @@ class VectorManager(models.Manager):
     def add_text(self, id, text, metadata, embedding=None):
         """Add a text to the database and the index."""
         object_id = id
-        if not embedding:
-            embedding = self.embedding_fn(text)
 
         return create_vector_from_text(
             manager=self,

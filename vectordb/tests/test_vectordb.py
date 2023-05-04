@@ -50,10 +50,11 @@ def test_add__same_sample_object_errors():
 @pytest.mark.django_db
 def test_related_texts():
     manager = Vector.objects
-    manager.add_text(1, "Sample text 1", {"field": "value"})
-    manager.add_text(2, "Sample text 2", {"field": "value"})
+    manager.add_text(1, "The green fox jumps 1", {"field": "value"})
+    manager.add_text(2, "The person walks", {"field": "value"})
+    manager.add_text(3, "The person in a blue shirt smiles", {"field": "value"})
 
-    related_vectors = manager.search("Sample text", k=1)
+    related_vectors = manager.search("fox jumps", k=1)
     assert len(related_vectors) == 1
     assert related_vectors.first().object_id == "1"
 
@@ -62,11 +63,13 @@ def test_related_texts():
 def test_related_objects():
     from vectordb.models import SampleModel
 
-    sample_instance1 = SampleModel.objects.create(text="Sample text 1")
-    sample_instance2 = SampleModel.objects.create(text="Sample text 2")
+    sample_instance1 = SampleModel.objects.create(text="The green fox jumps 1")
+    sample_instance2 = SampleModel.objects.create(text="The green fox jumps 2")
+    sample_instance3 = SampleModel.objects.create(text="The person walks")
     manager = Vector.objects
     manager.add_instance(sample_instance1)
     manager.add_instance(sample_instance2)
+    manager.add_instance(sample_instance3)
 
     related_vectors = manager.search(sample_instance1, k=1)
     assert len(related_vectors) == 1
@@ -76,9 +79,9 @@ def test_related_objects():
 @pytest.mark.django_db
 def test_search():
     manager = Vector.objects
-    manager.add_text(1, "Sample text 1", {"field": "value", "user": 1})
-    manager.add_text(2, "Sample text 2", {"field": "value2", "user": 1})
-    search_result = manager.search("Sample text", k=1)
+    manager.add_text(1, "The green fox jumps 1", {"field": "value", "user": 1})
+    manager.add_text(2, "The person walks", {"field": "value2", "user": 1})
+    search_result = manager.search("green fox", k=1)
     assert len(search_result) == 1
     assert search_result.first().object_id == "1"
 

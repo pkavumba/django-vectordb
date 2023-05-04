@@ -7,8 +7,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from .ann.indexes import HNSWIndex, BFIndex
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 
 class VectorQuerySet(models.QuerySet):

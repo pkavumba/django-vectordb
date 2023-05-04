@@ -23,7 +23,7 @@ class Vector(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    embedding = models.BinaryField(validators=[validate_embedding])
+    embedding = models.BinaryField(validators=[validate_embedding], max_length=None)
     text = models.TextField()
     metadata = models.JSONField(null=True, blank=True)
     object_id = models.CharField(max_length=255, null=True, blank=True)
@@ -58,8 +58,8 @@ class SampleModel(models.Model):
 
     text = models.TextField()
 
-    def get_text(self):
+    def get_vectordb_text(self):
         return self.text
 
-    def serializer(self):
+    def get_vectordb_metadata(self):
         return {"text": self.text, "id": self.id, "field": "value"}

@@ -7,8 +7,8 @@ from django.db import models
 
 import logging
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 
 def validate_vector_data(
@@ -19,7 +19,6 @@ def validate_vector_data(
     content_object: models.Model,
     object_id: Optional[str | int] = None,
 ):
-    logger.warning("Validating")
     # Check if either text or content_object is provided
     if text is None and content_object is None:
         raise ValidationError("Either text or content_object should be provided")
