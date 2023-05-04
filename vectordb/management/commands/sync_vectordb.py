@@ -42,6 +42,6 @@ class Command(BaseCommand):
                 self.stdout.write(f"Skipping {model_name} because it already exists")
             else:
                 Vector.objects.create(content_object=instance)
-                self.stdout.success(f"Added {model_name} to Vector model")
+                self.stdout.write(f"Added {model_name} to Vector model")
 
         self.stdout.write(f"Synced Vector model with {model_name}")

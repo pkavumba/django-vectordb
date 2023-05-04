@@ -13,20 +13,35 @@ def sync_vectordb_on_create_update(sender, instance, created, **kwargs):
     """
     Signal to save or update the vectordb when an instance is created or updated.
     """
-    # Extract the text using the get_text method
-    text = instance.get_text()
-
-    # Convert the text to embeddings using the Manager's embedding_fn
-    embedding = Vector.objects.embedding_fn(text)
-
-    # Save the instance to the Vector database if it doesn't exist, else update it
     content_type = ContentType.objects.get_for_model(instance)
-    vector, _ = Vector.objects.get_or_create(
-        content_type=content_type, object_id=instance.pk
-    )
-    vector.embedding = embedding.tobytes()
-    vector.text = text
-    vector.save()
+    if (
+        created
+        or not Vector.objects.filter(
+            content_type=content_type, object_id=instance.pk
+        ).exists()
+    ):
+        # Create a new entry in the Vector model
+        vector = Vector.objects.add_instance(instance)
+    else:
+        # Save the instance to the Vector database if it doesn't exist, else update it
+        vector = Vector.objects.get(content_type=content_type, object_id=instance.pk)
+
+        # Extract the text using the get_text method
+        text = instance.get_text()
+        metadata = instance.to_json()
+        vector.metadata = metadata
+
+        if text == vector.text:
+            # If the text is the same, don't update the vector
+            vector.save()  # save the metadata anyway
+            return
+        else:
+            # Else, update the vector
+            vector.text = text
+
+            # Convert the text to embeddings using the Manager's embedding_fn
+            vector.embedding = Vector.objects.embedding_fn(text).tobytes()
+            vector.save()
 
 
 def sync_vectordb_on_delete(sender, instance, **kwargs):

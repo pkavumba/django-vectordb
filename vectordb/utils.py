@@ -62,8 +62,8 @@ def create_vector_from_instance(manager, instance):
             f"Object of class {instance.__class__.__name__} must have a get_text method."
         )
 
-    if hasattr(instance, "serializer"):
-        metadata = instance.serializer()
+    if hasattr(instance, "to_json"):
+        metadata = instance.to_json()
     else:
         metadata = serializer(instance)
 
@@ -72,7 +72,7 @@ def create_vector_from_instance(manager, instance):
     return manager.create(
         content_object=instance,
         text=text,
-        embedding=embedding,
+        embedding=embedding.tobytes(),
         metadata=metadata,
     )
 
@@ -99,7 +99,7 @@ def create_vector_from_text(
     )
 
     vector = manager.create(
-        text=text, metadata=metadata, embedding=embedding, object_id=object_id
+        text=text, metadata=metadata, embedding=embedding.tobytes(), object_id=object_id
     )
 
     if embedding is not None and has_celery:

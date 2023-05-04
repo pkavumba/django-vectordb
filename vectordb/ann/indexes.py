@@ -11,7 +11,7 @@ from . import AbstractIndex
 
 
 class HSWNLibIndex(AbstractIndex):
-    def __init__(self, dim, max_elements, space="l2", *args, **kwargs):
+    def __init__(self, dim, max_elements, space="cosine", *args, **kwargs):
         self.dim = dim
         self.max_elements = max_elements
         self.space = space  # space can either be "l2" or "cosine"

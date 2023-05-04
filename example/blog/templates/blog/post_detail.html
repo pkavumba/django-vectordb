@@ -2,5 +2,18 @@
 {% extends "base.html" %} {% block content %}
 <h1>{{ post.title }}</h1>
 <p>{{ post.description }}</p>
-<a href="{% url 'post_list' %}">Back to Posts List</a>
-{% endblock %}
+<hr />
+<br />
+<p>It took {{search_time}}ms to search for related posts</p>
+<h3>Related Posts</h3>
+<ul>
+  {% for related_post in related_posts %}
+  <li>
+    <a href="{% url 'post_detail' related_post.pk %}"">{{related_post.title}}</a>
+  </li>
+  {% endfor %}
+  <hr />
+  <br />
+  <a href="{% url 'post_list' %}">Back to Posts List</a>
+  {% endblock %}
+</ul>

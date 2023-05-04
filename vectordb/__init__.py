@@ -1,13 +1,13 @@
-from django.apps import apps
+from django.apps import apps as django_apps
 
 
 def get_vectordb_model():
-    return apps.get_model("vectordb", "Vector")
+    return django_apps.get_model("vectordb", "Vector")
 
 
 class VectorProxy:
     def __getattr__(self, name):
-        Vector = apps.get_model("vectordb", "Vector")
+        Vector = get_vectordb_model()
         return getattr(Vector.objects, name)
 
 

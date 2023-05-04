@@ -9,7 +9,7 @@ class Post(models.Model):
         return self.title
 
     def get_text(self):
-        return self.description
+        return f"{self.title} -- {self.description}"
 
-    def serialize(self):
+    def to_json(self):
         return {"title": self.title, "description": self.description}
