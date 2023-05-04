@@ -42,10 +42,10 @@ class Vector(models.Model):
 
     @property
     def vector(self):
-        return np.frombuffer(self.embedding)
+        return np.frombuffer(self.embedding, dtype=np.float32)
 
     def save(self, *args, **kwargs):
-        if not self.embedding:
+        if self.embedding is None:
             self.embedding = Vector.objects.embedding_fn(self.text).tobytes()
         return super().save(*args, **kwargs)
 

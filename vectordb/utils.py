@@ -79,7 +79,7 @@ def create_vector_from_instance(manager, instance):
     return manager.create(
         content_object=instance,
         text=text,
-        embedding=embedding.tobytes(),
+        embedding=embedding.astype("float32").tobytes(),
         metadata=metadata,
     )
 
@@ -108,7 +108,10 @@ def create_vector_from_text(
     logging.warning(f"vector shape {embedding.shape}")
 
     vector = manager.create(
-        text=text, metadata=metadata, embedding=embedding.tobytes(), object_id=object_id
+        text=text,
+        metadata=metadata,
+        embedding=embedding.astype("float32").tobytes(),
+        object_id=object_id,
     )
 
     if embedding is not None and has_celery:

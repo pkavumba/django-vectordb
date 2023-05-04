@@ -12,6 +12,7 @@ def test_add_text():
     assert vector.object_id == 1
     assert vector.text == "Sample text"
     assert vector.metadata == {"field": "value"}
+    assert vector.vector.shape == (384,)
 
 
 @pytest.mark.django_db
@@ -26,6 +27,7 @@ def test_add_instance():
     assert vector.object_id == sample_instance.pk
     assert vector.text == "Sample text"
     assert vector.content_type == content_type
+    assert vector.vector.shape == (384,)
 
 
 @pytest.mark.django_db

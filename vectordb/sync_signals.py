@@ -40,7 +40,9 @@ def sync_vectordb_on_create_update(sender, instance, created, **kwargs):
             vector.text = text
 
             # Convert the text to embeddings using the Manager's embedding_fn
-            vector.embedding = Vector.objects.embedding_fn(text).tobytes()
+            vector.embedding = (
+                Vector.objects.embedding_fn(text).astype("float32").tobytes()
+            )
             vector.save()
 
 

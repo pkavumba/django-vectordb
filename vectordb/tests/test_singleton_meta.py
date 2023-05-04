@@ -1,4 +1,3 @@
-import pytest
 from abc import ABC
 
 from vectordb.ann import SingletonABCMeta

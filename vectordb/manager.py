@@ -61,12 +61,7 @@ class VectorManager(models.Manager):
 
         if os.path.exists(self.persistent_path):
             self.index = HNSWIndex.load(self.persistent_path)
-        else:
-            vector_count = self.count()
-            if vector_count > 10_000:
-                self.index = HNSWIndex(
-                    max_elements=int(vector_count * 1.3), dim=self.embedding_dim
-                )
+
         logger.info(
             f"Loading the weights has been completed in {time.time() - start} seconds"
         )

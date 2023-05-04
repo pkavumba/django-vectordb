@@ -21,7 +21,7 @@ def update_vector_index(sender, instance, created, **kwargs):
     """
     # Ensure VectorManager has an instance of HNSWIndex
     if sender.objects.index is not None:
-        embedding = instance.embedding
+        embedding = instance.vector
         id = instance.id
 
         # If instance is created, add it to the index

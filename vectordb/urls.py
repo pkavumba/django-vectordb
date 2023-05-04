@@ -1,5 +1,3 @@
-from django.urls import path, include
-
 try:
     from rest_framework.routers import SimpleRouter
 except ImportError:

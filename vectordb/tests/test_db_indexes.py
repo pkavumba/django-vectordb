@@ -1,8 +1,5 @@
-import os
-import json
 import pytest
 import numpy as np
-from django.conf import settings
 from vectordb.ann.indexes import BFIndex, HNSWIndex
 
 nb = 100

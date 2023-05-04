@@ -22,7 +22,9 @@ class VectorQuerySet(models.QuerySet):
             return self.none()
 
         embeddings_list = [vector.embedding for vector in vectors]
-        embeddings = np.frombuffer(b"".join(embeddings_list)).reshape(vector_count, -1)
+        embeddings = np.frombuffer(b"".join(embeddings_list), dtype=np.float32).reshape(
+            vector_count, -1
+        )
 
         space = "cosine"
 
@@ -82,7 +84,9 @@ class VectorQuerySet(models.QuerySet):
             query_object = self.get(
                 content_type=content_type, object_id=model_object.id
             )
-            query_embeddings = np.frombuffer(query_object.embedding).reshape(1, -1)
+            query_embeddings = np.frombuffer(
+                query_object.embedding, dtype=np.float32
+            ).reshape(1, -1)
         else:
             query_embeddings = self.model.objects.embedding_fn(model_object.get_text())
 
