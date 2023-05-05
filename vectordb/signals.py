@@ -10,7 +10,7 @@ from .models import Vector
 
 
 # Get an instance of a logger
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("VectorDB")
 logger.setLevel(logging.DEBUG)
 
 

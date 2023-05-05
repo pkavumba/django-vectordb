@@ -4,7 +4,7 @@ from .models import Vector
 
 
 class VectorAdmin(admin.ModelAdmin):
-    list_display = ("id", "text", "owner", "created_at", "updated_at")
+    list_display = ("id", "text", "created_at", "updated_at", "metadata")
     list_filter = ("created_at", "updated_at", "content_type")
     search_fields = ("text",)
 

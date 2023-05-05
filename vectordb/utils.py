@@ -105,8 +105,6 @@ def create_vector_from_text(
         embedding=embedding,
     )
 
-    logging.warning(f"vector shape {embedding.shape}")
-
     vector = manager.create(
         text=text,
         metadata=metadata,

@@ -8,7 +8,7 @@ from django.db import models
 from .ann.indexes import HNSWIndex, BFIndex
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(" VectorDB ")
 
 
 class VectorQuerySet(models.QuerySet):
@@ -26,25 +26,19 @@ class VectorQuerySet(models.QuerySet):
             vector_count, -1
         )
 
-        space = "cosine"
-
         if vector_count < 10_000:
             index = BFIndex(
                 max_elements=vector_count,
                 dim=embeddings.shape[1],
-                space=space,
                 should_not_cache=True,
             )
             index.add(embeddings, ids=ids_list)
             labels, distances = index.search(query_embeddings, k)
         else:
             if manager.index is None:
-                manager.index = HNSWIndex(
-                    self.embedding_dim, max_elements=vector_count, space=space
-                )
+                manager.index = HNSWIndex(self.embedding_dim, max_elements=vector_count)
                 manager.index.add(embeddings, ids=ids_list)
-            else:
-                space = manager.index.space
+
             labels, distances = manager.index.search(
                 query_embeddings, k, ids__in=ids_list
             )
@@ -64,12 +58,8 @@ class VectorQuerySet(models.QuerySet):
                 output_field=models.FloatField(),
             )
         )
-        if space == "cosine":
-            queryset = queryset.order_by("-distance")
-        else:
-            queryset = queryset.order_by("distance")
 
-        return queryset
+        return queryset.order_by("distance")
 
     def related_text(self, text: str, k: int = 10):
         vectors = self

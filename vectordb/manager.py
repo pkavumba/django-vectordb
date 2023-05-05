@@ -1,31 +1,22 @@
 from __future__ import annotations
 
-import importlib
 import os
 import logging
 import time
-
-import numpy as np
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.utils import IntegrityError
-from django.contrib.contenttypes.models import ContentType
 
 from .ann.indexes import HNSWIndex
 from .queryset import VectorQuerySet
 from .utils import (
-    serializer,
     get_embedding_function,
     create_vector_from_instance,
     create_vector_from_text,
-    populate_index,
 )
-from .validators import validate_vector_data
 
 # Get an instance of a logger
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("VectorDB")
 
 
 EMBEDDING_FN = getattr(settings, "EMBEDDING_FN", None)
