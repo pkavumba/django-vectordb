@@ -2,7 +2,7 @@
 
 ---
 
-Django Vector DB is a powerful and flexible toolkit for adding vector search capabilities to your Django applications.
+Django Vector DB is a powerful and flexible toolkit for adding vector search capabilities to your Django applications. It is built on top of lightening fast nearest neighbor search library: hnswlib.
 
 Some reasons you might want to use Django Vector DB:
 
