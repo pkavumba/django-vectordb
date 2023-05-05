@@ -42,7 +42,7 @@ class VectorManager(models.Manager):
         self.persistent_path = PERSISTENT_PATH
 
         logger.info(
-            "Loading the embedding function. This may take a few minutes the first time it runs as it downloads the wieghts for the model."
+            "Loading the weights for the embedding model. This may take a few seconds the first time it runs because it downloads the wieghts and caches them."
         )
         start = time.time()
 
