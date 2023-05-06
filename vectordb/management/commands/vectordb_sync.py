@@ -18,7 +18,9 @@ class Command(BaseCommand):
         try:
             model = apps.get_model(app_name, model_name)
         except LookupError:
-            self.stderr.write(f"Model {model_name} not found in app myapp")
+            self.stderr.write(
+                self.style.ERROR(f"Model {model_name} not found in app myapp")
+            )
             return
 
         # Get all instances of the model
@@ -27,21 +29,35 @@ class Command(BaseCommand):
         # Get all instances of Vector with the same content_type
         content_type = ContentType.objects.get_for_model(model)
         vector_instances = Vector.objects.filter(content_type=content_type)
-
-        # Remove instances in Vector that are not in the given model
-        vector_instances.exclude(
+        have_been_deleted_qs = vector_instances.exclude(
             object_id__in=instances.values_list("pk", flat=True)
-        ).delete()
+        )
 
+        num_to_remove = have_been_deleted_qs.count()
+
+        if num_to_remove > 0:
+            # Remove instances in Vector that are not in the given model
+            have_been_deleted_qs.delete()
+
+        count_adds = 0
+        count_skips = 0
         # Add instances to Vector that are not already there
         for instance in instances:
             if Vector.objects.filter(
                 content_type=content_type,
                 object_id=instance.pk,
             ).exists():
-                self.stdout.write(f"Skipping {model_name} because it already exists")
+                self.stdout.write(f"Skipping {instance} because it already exists")
+                count_skips += 1
             else:
                 Vector.objects.add_instance(instance)
-                self.stdout.write(f"Added {model_name} to Vector model")
+                self.stdout.write(
+                    self.style.SUCCESS(f"Added {instance} to Vector model")
+                )
+                count_adds += 1
 
-        self.stdout.write(f"Synced Vector model with {model_name}")
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"Synced Vector model with {model_name}. {count_adds} added, {count_skips} skipped, {num_to_remove} removed."
+            )
+        )

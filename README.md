@@ -2,7 +2,7 @@
 
 ---
 
-Django Vector DB is a powerful and flexible toolkit for adding vector search capabilities to your Django applications.
+Django Vector DB is a powerful and flexible toolkit for adding vector search capabilities to your Django applications. It is built on top of lightening fast nearest neighbor search library: hnswlib.
 
 Some reasons you might want to use Django Vector DB:
 
@@ -21,19 +21,19 @@ Some reasons you might want to use Django Vector DB:
 
 Django VectorDB requires the following:
 
-- Python (3.6, 3.7, 3.8, 3.9, 3.10, 3.11)
-- Django (2.2, 3.0, 3.1, 3.2, 4.0, 4.1)
-- HNSWLib (0.7.0)
-- numpy
+- [Python][python] (3.6, 3.7, 3.8, 3.9, 3.10, 3.11)
+- [Django][django] (2.2, 3.0, 3.1, 3.2, 4.0, 4.1, 4.2)
+- [HNSWLib][hnswlib] (0.7.0)
+- [numpy][numpy]
 
 We **highly recommend** and only officially support the latest patch release of
 each Python and Django series.
 
 The following packages are optional:
 
-- Sentence-Transformers - Add support for converting text into vector embeddings used for similarity search
-- Django Rest Framework - Add API endpoint for VectorDB.
-- django-filter - Add metadata filtering support on the API endpoint.
+- [Sentence-Transformers][sentence-transformers] - Add support for converting text into vector embeddings used for similarity search
+- [Django Rest Framework][drf] - Add API endpoint for VectorDB.
+- [django-filters][django-filters] - Add metadata filtering support on the API endpoint.
 
 ---
 
@@ -41,11 +41,15 @@ The following packages are optional:
 
 Install using `pip`, it is recommended that you install the optional packages with:
 
-    pip install django-vectordb[standard] # This will install the optional dependencies above.
+```bash
+    pip install "django-vectordb[standard]" # This will install the optional dependencies above.
+```
 
 If you dont want to install the optional packages you can run:
 
+```bash
     pip install django-vectordb
+```
 
 Add `'django-vectordb'` to your `INSTALLED_APPS` setting.
 
@@ -142,16 +146,16 @@ class Post(models.Model):
         return {"title": self.title, "description": self.description, "user_id": self.user.id, "model": "post"}
 ```
 
-In an existing project, you can run the `sync_vectordb` management command to add all items to the database.
+In an existing project, you can run the `vectordb_sync` management command to add all items to the database.
 
 ```bash
-./manage.py sync_vectordb <app_name> <model_name>
+./manage.py vectordb_sync <app_name> <model_name>
 ```
 
 For this example:
 
 ```bash
-./manage.py sync_vectordb blog Post
+./manage.py vectordb_sync blog Post
 ```
 
 #### Manually adding items to the vector database
@@ -221,7 +225,7 @@ class BlogConfig(AppConfig):
 
 These signals will sync the vectors when you create and delete instances. Note that signals are not called in bulk create, so you will need to sync manually when using those methods.
 
-Ensure that your models implement the `get_text()` and/or `serialize()` methods for proper syncing.
+Ensure that your models implement the `get_vectordb_text()` and/or `get_vectordb_metadata()` methods for proper syncing.
 
 ### Searching
 
@@ -254,6 +258,24 @@ vectordb.filter(text__icontains="Apple", metadata__title__icontains="IPhone", me
 Refer to the [Django documentation](https://docs.djangoproject.com/en/4.2/topics/db/queries/) on querying the `JSONField` for more information on filtering.
 
 ---
+
+## Settings
+
+You can provide your settings in the `settings.py` file of your project. The following settings are available:
+
+```python
+    # settings.py
+    DJANGO_VECTOR_DB = {
+        "DEFAULT_EMBEDDING_CLASS": ..., # Default: "vectordb.embedding_functions.SentenceTransformerEncoder",
+        "DEFAULT_EMBEDDING_MODEL": ..., # Default: "all-MiniLM-L6-v2",
+        # Can be "cosine" or "l2"
+        "DEFAULT_EMBEDDING_SPACE": ..., # Default "l2"
+        "DEFAULT_EMBEDDING_DIMENSION": ..., # Default is 384 for "all-MiniLM-L6-v2"
+        "DEFAULT_MAX_N_RESULTS": 10, # Number of results to return from search maximum is default is 10
+        "DEFAULT_MIN_SCORE": 0.0, # Minimum score to return from search default is 0.0
+        "DEFAULT_MAX_BRUTEFORCE_N": 10_000, # Maximum number of items to search using brute force default is 10_000. If the number of items is greater than this number, the search will be done using the HNSW index.
+    }
+```
 
 ## Quickstart
 
@@ -288,3 +310,12 @@ Or
 ```bash
 tox
 ```
+
+[python]: https://www.python.org
+[django]: https://www.djangoproject.com
+[numpy]: https://numpy.org
+[quickstart]: tutorial/quickstart.md
+[sentence-transformers]: https://www.sbert.net
+[hnswlib]: https://github.com/nmslib/hnswlib
+[drf]: https://www.django-rest-framework.org
+[django-filters]: https://pypi.org/project/django-filter/

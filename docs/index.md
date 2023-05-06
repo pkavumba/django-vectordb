@@ -21,19 +21,19 @@ Some reasons you might want to use Django Vector DB:
 
 Django VectorDB requires the following:
 
-- Python (3.6, 3.7, 3.8, 3.9, 3.10, 3.11)
-- Django (2.2, 3.0, 3.1, 3.2, 4.0, 4.1)
-- HNSWLib (0.7.0)
-- numpy
+- [Python][python] (3.6, 3.7, 3.8, 3.9, 3.10, 3.11)
+- [Django][django] (2.2, 3.0, 3.1, 3.2, 4.0, 4.1, 4.2)
+- [HNSWLib][hnswlib] (0.7.0)
+- [numpy][numpy]
 
 We **highly recommend** and only officially support the latest patch release of
 each Python and Django series.
 
 The following packages are optional:
 
-- Sentence-Transformers - Add support for converting text into vector embeddings used for similarity search
-- Django Rest Framework - Add API endpoint for VectorDB.
-- django-filter - Add metadata filtering support on the API endpoint.
+- [Sentence-Transformers][sentence-transformers] - Add support for converting text into vector embeddings used for similarity search
+- [Django Rest Framework][drf] - Add API endpoint for VectorDB.
+- [django-filters][django-filters] - Add metadata filtering support on the API endpoint.
 
 ---
 
@@ -41,11 +41,15 @@ The following packages are optional:
 
 Install using `pip`, it is recommended that you install the optional packages with:
 
-    pip install django-vectordb[standard] # This will install the optional dependencies above.
+```bash
+    pip install "django-vectordb[standard]" # This will install the optional dependencies above.
+```
 
 If you dont want to install the optional packages you can run:
 
+```bash
     pip install django-vectordb
+```
 
 Add `'django-vectordb'` to your `INSTALLED_APPS` setting.
 
@@ -142,16 +146,16 @@ class Post(models.Model):
         return {"title": self.title, "description": self.description, "user_id": self.user.id, "model": "post"}
 ```
 
-In an existing project, you can run the `sync_vectordb` management command to add all items to the database.
+In an existing project, you can run the `vectordb_sync` management command to add all items to the database.
 
 ```bash
-./manage.py sync_vectordb <app_name> <model_name>
+./manage.py vectordb_sync <app_name> <model_name>
 ```
 
 For this example:
 
 ```bash
-./manage.py sync_vectordb blog Post
+./manage.py vectordb_sync blog Post
 ```
 
 #### Manually adding items to the vector database
@@ -288,3 +292,12 @@ Or
 ```bash
 tox
 ```
+
+[python]: https://www.python.org
+[django]: https://www.djangoproject.com
+[numpy]: https://numpy.org
+[quickstart]: tutorial/quickstart.md
+[sentence-transformers]: https://www.sbert.net
+[hnswlib]: https://github.com/nmslib/hnswlib
+[drf]: https://www.django-rest-framework.org
+[django-filters]: https://pypi.org/project/django-filter/

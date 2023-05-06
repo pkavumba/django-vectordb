@@ -8,6 +8,7 @@ from django.conf import settings
 from django.core.serializers import serialize
 from django.db import models
 import numpy as np
+from vectordb.settings import vectordb_settings
 
 
 from .validators import validate_vector_data
@@ -26,12 +27,6 @@ except ImportError:
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-EMBEDDING_FN = getattr(settings, "EMBEDDING_FN", None)
-EMBEDDING_DIM = getattr(settings, "EMBEDDING_DIM", None)
-
-if EMBEDDING_FN is not None and EMBEDDING_DIM is None:
-    raise ValueError("EMBEDDING_FN is set but EMBEDDING_DIM is not set")
 
 
 def flatten_object_json(serialized_data):
@@ -119,18 +114,10 @@ def create_vector_from_text(
 
 
 def get_embedding_function():
-    if EMBEDDING_FN is not None:
-        module_name, function_name = settings.EMBEDDING_FN.rsplit(".", 1)
-        module = importlib.import_module(module_name)
-        embedding_fn = getattr(module, function_name)
-    else:
-        from .embedding_functions import SentenceTransformerEncoder
-
-        embedding_dim = (
-            SentenceTransformerEncoder().model.get_sentence_embedding_dimension()
-        )
-
-        embedding_fn = SentenceTransformerEncoder()
+    embedding_fn = vectordb_settings.DEFAULT_EMBEDDING_CLASS(
+        model_name=vectordb_settings.DEFAULT_EMBEDDING_MODEL
+    )
+    embedding_dim = vectordb_settings.DEFAULT_EMBEDDING_DIMENSION
     return embedding_fn, embedding_dim
 
 

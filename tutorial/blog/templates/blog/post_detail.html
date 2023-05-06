@@ -1,19 +1,19 @@
-<!-- blog/post_detail.html -->
-{% extends "base.html" %} {% block content %}
+<!-- blog/templates/blog/post_detail.html -->
+{% extends "blog/base.html" %} {% block content %}
 <h1>{{ post.title }}</h1>
 <p>{{ post.description }}</p>
 <hr />
 <br />
 <h3>Related Posts</h3>
-<p>Search took {{ search_time }}.</p>
 <ul>
   {% for related_post in related_posts %}
   <li>
-    <a href="{% url 'post_detail' related_post.pk %}">{{related_post.title}}</a>
+    <a href="{% url 'post_detail' related_post.pk %}"">{{related_post.title}}</a>
   </li>
   {% endfor %}
   <hr />
   <br />
   <a href="{% url 'post_list' %}">Back to Posts List</a>
-  {% endblock %}
 </ul>
+{% endblock %}
+

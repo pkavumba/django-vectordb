@@ -28,9 +28,10 @@ class PostDetailView(DetailView):
         obj = self.get_object()
         # lets measure the time it takes to search for related posts
         start = time.time()
-        related = vectordb.search(obj).only("content_object")
+        related = vectordb.search(obj, k=10)
         content_objects = [item.content_object for item in related]
         context["related_posts"] = content_objects
+        context["search_time"] = f"{(1000 * related.search_time):.3f}ms"
         return context
 
 

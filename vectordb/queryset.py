@@ -6,13 +6,18 @@ import numpy as np
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from .ann.indexes import HNSWIndex, BFIndex
+from vectordb.settings import vectordb_settings
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(" VectorDB ")
 
 
 class VectorQuerySet(models.QuerySet):
-    def _get_related_vectors(self, query_embeddings, vectors, k=10, ids_list=None):
+    def _get_related_vectors(
+        self, query_embeddings, vectors, k: int | None = None, ids_list=None
+    ):
+        if k is None:
+            k = vectordb_settings.DEFAULT_MAX_N_RESULTS
         manager = self.model.objects
         vector_count = len(vectors)
         # k cannot be greater than the number of vectors. Don't raise an error
@@ -29,14 +34,19 @@ class VectorQuerySet(models.QuerySet):
         if vector_count < 10_000:
             index = BFIndex(
                 max_elements=vector_count,
-                dim=embeddings.shape[1],
+                dim=vectordb_settings.DEFAULT_EMBEDDING_DIMENSION,
+                space=vectordb_settings.DEFAULT_EMBEDDING_SPACE,
                 should_not_cache=True,
             )
             index.add(embeddings, ids=ids_list)
             labels, distances = index.search(query_embeddings, k)
         else:
             if manager.index is None:
-                manager.index = HNSWIndex(self.embedding_dim, max_elements=vector_count)
+                manager.index = HNSWIndex(
+                    max_elements=vector_count,
+                    dim=vectordb_settings.DEFAULT_EMBEDDING_DIMENSION,
+                    space=vectordb_settings.DEFAULT_EMBEDDING_SPACE,
+                )
                 manager.index.add(embeddings, ids=ids_list)
 
             labels, distances = manager.index.search(
@@ -61,13 +71,13 @@ class VectorQuerySet(models.QuerySet):
 
         return queryset.order_by("distance")
 
-    def related_text(self, text: str, k: int = 10):
+    def related_text(self, text: str, k: int | None = None):
         vectors = self
         ids_list = [vector.id for vector in vectors]
         query_embeddings = self.model.objects.embedding_fn([text])
         return self._get_related_vectors(query_embeddings, vectors, k, ids_list)
 
-    def related_objects(self, model_object, k=10):
+    def related_objects(self, model_object, k: int | None = None):
         content_type = ContentType.objects.get_for_model(model_object)
 
         if self.filter(content_type=content_type, object_id=model_object.id).exists():
@@ -86,10 +96,11 @@ class VectorQuerySet(models.QuerySet):
         ids_list = [vector.id for vector in vectors]
         return self._get_related_vectors(query_embeddings, vectors, k, ids_list)
 
-    def search(self, query, k=10):
+    def search(self, query, k: int | None = None):
         if isinstance(query, models.Model):
             start = time.time()
             results = self.related_objects(query, k=k)
+            results.search_time = time.time() - start
             logger.info(f"Search took {1000*(time.time() - start)}ms")
             return results
 
@@ -97,6 +108,10 @@ class VectorQuerySet(models.QuerySet):
             start = time.time()
             results = self.related_text(query, k=k)
             logger.info(f"Search took  {1000*(time.time() - start)}ms")
+            results.search_time = time.time() - start
             return results
         else:
             raise ValueError("Query must be a model instance or string")
+
+    def related(self, *args, **kwargs):
+        return self.search(*args, **kwargs)
