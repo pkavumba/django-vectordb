@@ -24,3 +24,4 @@ Pipfile.lock
 
 # macOS
 .DS_Store
+deploy.sh

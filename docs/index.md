@@ -241,6 +241,18 @@ Note: search method returns a query whose results are order from best match. Eac
 vectordb.search("Some text", k=10).only('text', 'content_object')
 ```
 
+Search doesn't only work for `text` you can also search for model instances:
+
+```python
+post1 = Post.objects.get(id=1)
+# Limit the search scope to a user with an id of 1
+results = vectordb.search(post1, k=10)
+```
+
+This is also a way to get related posts to `post1`. Thus, you can use `vectordb` for recommendations as well.
+
+Note: Seaching by model instances will automatically scope the results to instances of that type. For example, if you search by `post1` you will only get results that are instances of `Post`.
+
 If `k` is not provided, the default value is 10.
 
 ### Filtering
@@ -253,6 +265,17 @@ vectordb.filter(metadata__user_id=1).search("Some text", k=10)
 
 # example two with more filters
 vectordb.filter(text__icontains="Apple", metadata__title__icontains="IPhone", metadata__description__icontains="2023").search("Apple new phone", k=10)
+```
+
+We can also use model instances instead of text:
+
+```python
+post1 = Post.objects.get(id=1)
+# Limit the search scope to a user with an id of 1
+results = vectordb.filter(metadata__user_id=1).search(post1, k=10)
+
+# Scope the results to text which contains France, belonging to user with id 1 and created in 2023
+vectordb.filter(text__icontains="Apple", metadata__title__icontains="IPhone", metadata__description__icontains="2023").search(post1, k=10)
 ```
 
 Refer to the [Django documentation](https://docs.djangoproject.com/en/4.2/topics/db/queries/) on querying the `JSONField` for more information on filtering.

@@ -2,6 +2,8 @@
 
 We're going to create a blogging site then add vector search to it through `django-vectordb`.
 
+---
+
 ## Project setup
 
 Create a new Django project named `tutorial`, then start a new app called `blog`.
@@ -11,7 +13,7 @@ Create a new Django project named `tutorial`, then start a new app called `blog`
     python3 -m venv env
     source env/bin/activate  # On Windows use `env\Scripts\activate`
 
-    # Install Django and Django REST framework into the virtual environment
+    # Install Django and Django VectorDB into the virtual environment
     pip install django
     pip install django-vectordb[standard] # include optional dependencies
 
@@ -44,7 +46,20 @@ The project layout should look like:
         └── wsgi.py
 ```
 
-Now lets add blog to the `INSTALLED_APPS` in `tutorial/settings.py`
+Now sync your database for the first time:
+
+```bash
+    python manage.py makemigrations # create migrations for blog
+    python manage.py migrate
+```
+
+We'll also create an initial user named `admin` with a password. We'll authenticate as that user later in our example.
+
+```bash
+    python manage.py createsuperuser --username admin --email admin@example.com
+```
+
+Now lets add `blog` app and `vectordb` to the `INSTALLED_APPS` in `tutorial/settings.py`
 
 ```python
     # settings.py
@@ -56,10 +71,11 @@ Now lets add blog to the `INSTALLED_APPS` in `tutorial/settings.py`
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "blog", # add blog to here
+    "vectordb", # add vectordb to here. The order is not important though
     ]
 ```
 
-Next lets add a `POST` model to blog app `blog/models.py` for saving our posts
+Next, let's add a `POST` model to our blog app by modifying `blog/models.py`, which will enable us to save our posts. Additionally, we will include the `get_vectordb_text` method to specify the text we want to search by in `vectordb`. We will also implement the `get_vectordb_metadata` method to incorporate specific fields we wish to filter by. If we don't create our custom `get_vectordb_metadata`, `vectordb` will serialize all the fields into metadata, which could be suboptimal as we might not be interested in some of the fields added. Therefore, it is **recommended** to implement our own `get_vectordb_metadata` that contains only the fields we want to filter by. These methods will allow `vectordb` to perform additional functions for us.
 
 ```python
     # blog/models.py
@@ -75,26 +91,33 @@ Next lets add a `POST` model to blog app `blog/models.py` for saving our posts
         user = models.ForeignKey(User, on_delete=models.CASCADE)
         created_at = models.DateTimeField(auto_now_add=True)
 
+        def get_vectordb_text(self):
+            return self.title + " " + self.description
+
+        def get_vectordb_metadata(self):
+            return {
+                # so we can filter by user id
+                "user_id": self.user.id,
+                # so we can filter by username
+                "username": self.user.username,
+                # so we can filter by created_at_year
+                "created_at_year": self.created_at.year,
+                # so we can filter by created_at_month
+                "created_at_month": self.created_at.month,
+            }
+
         def __str__(self):
             return self.title
 ```
 
-Our model has three fields, the `title`, `description`, `created_at`, and a `user` foreign key.
+Our model has three fields, the `title`, `description`, `created_at`, and a `user` foreign key. In the metadata we include the `user_id`, `username`, `created_at_year`, and `created_at_month`. We will use these fields to filter our results later.
 
-Now sync your database for the first time:
+Now lets make migrations and make tables for the `blog` app and the `vectordb` app.
 
 ```bash
-    python manage.py makemigrations # create migrations for blog
+    python manage.py makemigrations
     python manage.py migrate
 ```
-
-We'll also create an initial user named `admin` with a password. We'll authenticate as that user later in our example.
-
-```bash
-    python manage.py createsuperuser --username admin --email admin@example.com
-```
-
-Once you've set up a database and the initial user is created and ready to go.
 
 Run the development server now
 
@@ -116,132 +139,169 @@ Lets add the Post model to the admins panel. Edit the `blog/admin.py`
     admin.site.register(Post)
 ```
 
-Now we can visit `http://127.0.0.1:8000/admin/blog/post/` and add a few Posts. Go ahead and add something
+Now we can visit [http://127.0.0.1:8000/admin/blog/post/][admin-post] and add a few Posts. Go ahead and add something
 
-## Forms
+---
 
-In the last section we used the admin panel to add some post. Now lets add a form for post to the blogs.
+## Configuring Vector Search
 
-Create a new file in blog directory called `forms.py`
+First, let's synchronize all posts with the vector database. To do this, simply run the following command:
+
+```bash
+    python manage.py vectordb_sync <app_name> <model_name>
+```
+
+For this example we run:
+
+```bash
+    python manage.py vectordb_sync blog Post
+```
+
+Lastly, let's make sure that the Post model remains synchronized with the vector database, so that any changes, such as creating, deleting, or updating posts, are automatically registered by `vectordb`. To do this, we'll create a `signals.py` file in the blog directory and input the following code:
 
 ```python
-    # blog/forms.py
-    from django import forms
-    from .models import Post
+# blog/signals.py
+from django.db.models.signals import post_save, post_delete
 
+from vectordb.sync_signals import (
+    sync_vectordb_on_create_update,
+    sync_vectordb_on_delete,
+)
 
-    class PostForm(forms.ModelForm):
-        class Meta:
-            model = Post
-            fields = ["title", "description"]
+from .models import Post
+
+post_save.connect(
+    sync_vectordb_on_create_update,
+    sender=Post,
+    dispatch_uid="update_vector_index_super_unique_id",
+)
+
+post_delete.connect(
+    sync_vectordb_on_delete,
+    sender=Post,
+    dispatch_uid="delete_vector_index_super_unique_id",
+)
 ```
 
-## Views
-
-Lets add some views for viewing our blog posts. We will keep things simple and use function based views.
-
-First create a directory called `templates` withing the blog app. Inside the `templates` directory create another folder called `blog`.
-
-Lets add a basic `base.html`
-
-```html
-<!--blog/templates/blog/base.html-->
-{% load static %}
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8" />
-    <title>Django Vector Database</title>
-  </head>
-  <body>
-    <div class="container">{% block content %} {% endblock %}</div>
-  </body>
-</html>
-```
-
-Now lets create the list, detail, create view.
+Then import the signals in your `apps.py`
 
 ```python
-    from django.shortcuts import render
-
-    from django.contrib.auth.decorators import login_required
-    from django.shortcuts import render, redirect, get_object_or_404
-
-    from .models import Post
-    from .forms import PostForm
+# blog/apps.py
+from django.apps import AppConfig
 
 
-    def post_list(request):
-        posts = Post.objects.all().order_by("-created_at")
-        return render(request, "blog/post_list.html", {"posts": posts})
+class BlogConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "blog"
 
-
-    def post_detail(request, pk):
-        post = get_object_or_404(Post, pk=pk)
-        return render(request, "blog/post_detail.html", {"post": post})
-
-
-    @login_required
-    def post_create(request):
-        if request.method == "POST":
-            form = PostForm(request.POST)
-            if form.is_valid():
-                post = form.save(commit=False)
-                post.user = request.user
-                post.save()
-                return redirect("post_list")
-        else:
-            form = PostForm()
-        return render(request, "blog/post_create.html", {"form": form})
+    # add ready method if not defined
+    def ready(self):
+        # import signals
+        import blog.signals
 ```
 
-And finally, lets add the templates for these views.
+Now we can run the development server again
 
-We will begin with a template that displays a list of blog posts with their titles as clickable links. The template extends the "blog/base.html" template. In case there are no posts, it displays the message "No posts available." At the end, we add a link to create a new blog post using the "post_create" URL pattern.
-
-```html
-<!-- blog/templates/blog/post_list.html -->
-{% extends "blog/base.html" %} {% block content %}
-<h1>Blog Posts</h1>
-<ul>
-  {% for post in posts %}
-  <li>
-    <a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a>
-  </li>
-  {% empty %}
-  <li>No posts available.</li>
-  {% endfor %}
-</ul>
-<a href="{% url 'post_create' %}">Add New Post</a>
-{% endblock %}
+```bash
+    ./manage.py runserver
 ```
 
-Next we add the template "post_detail.html" responsible for displaying the details of a single blog post.
-The template also includes a link to navigate back to the list of all blog posts.
+Visit [http://127.0.0.1:8000/admin/blog/post/][admin-post] and try adding a new post. You will notice that it automatically syncs with the vector database at [http://127.0.0.1:8000/admin/vectordb/vector/][admin-vectordb]. If you attempt to delete a post, it will also be automatically removed from the vector database. All of these features are provided out-of-the-box by `vectordb`, making the process seamless and efficient.
 
-```html
-<!-- blog/templates/blog/post_detail.html -->
-{% extends "blog/base.html" %} {% block content %}
-<h1>{{ post.title }}</h1>
-<p>{{ post.description }}</p>
-<a href="{% url 'post_list' %}">Back to Posts List</a>
-{% endblock %}
+---
+
+## Fast Vector Search
+
+To perform a search, simply invoke the `vectordb.search()` method:
+
+```python
+from vectordb import vectordb
+results = vectordb.search("A Culinary Journey", k=10) # k represents the maximum number of results desired.
+
+# get the search time in seconds
+print(results.search_time) # only available if search is the last method called
 ```
 
-```html
-<!-- blog/templates/blog/post_create.html -->
-{% extends "blog/base.html" %} {% block content %}
-<h1>Create New Post</h1>
-<form method="post">
-  {% csrf_token %} {{ form.as_p }}
-  <button type="submit">Save Post</button>
-</form>
-<a href="{% url 'post_list' %}">Back to Posts List</a>
-{% endblock %}
+Note that the search method returns a QuerySet with results ordered by the best match. The QuerySet will also have the search_time in seconds which only available when search is the last method called on the QuerySet. Each result item will contain the following fields: `id`, `content_object`, `object_id`, `content_type`, `text`, `embedding`, an annotated `score`, and a `vector` property that returns the `np.ndarray` representation of the embedding field, which is in `bytes`. As the search provides a `QuerySet`, you can selectively display the fields you want like this:
+
+```python
+from vectordb import vectordb
+results = vectordb.search("A Culinary Journey", k=10).only('text', 'content_object')
 ```
 
-This completes boilerplate we need in order to test django vector database.
+If `k` is not specified, the default value is 10.
+
+Search doesn't only work for `text` you can also search for model instances:
+
+```python
+post1 = Post.objects.get(id=1)
+# Limit the search scope to a user with an id of 1
+results = vectordb.search(post1, k=10)
+```
+
+This is also a way to get related posts to `post1`. Thus, you can use `vectordb` for recommendations as well.
+
+Note: Seaching by model instances will automatically scope the results to instances of that type. For example, if you search by `post1` you will only get results that are instances of `Post`.
+
+---
+
+## Filtering
+
+You can apply filters on `text` or `metadata` using the full capabilities of Django QuerySet filtering:
+
+```python
+# Limit the search scope to a user with an id of 1
+results = vectordb.filter(metadata__user_id=1).search("A Culinary Journey", k=10)
+
+# Scope the results to text which contains France, belonging to user with id 1 and created in 2023
+vectordb.filter(text__icontains="France", metadata__user_id=1, metadata__create_at_year=2023).search("A Culinary Journey", k=10)
+```
+
+We can also use model instances instead of text:
+
+```python
+post1 = Post.objects.get(id=1)
+# Limit the search scope to a user with an id of 1
+results = vectordb.filter(metadata__user_id=1).search(post1, k=10)
+
+# Scope the results to text which contains France, belonging to user with id 1 and created in 2023
+vectordb.filter(text__icontains="France", metadata__user_id=1, metadata__create_at_year=2023).search(post1, k=10)
+```
+
+For more information on filtering, refer to the [Django documentation][django-queries] on querying the `JSONField`.
+
+---
+
+## Manually Adding Items to the Vector Database
+
+VectorDB also provides a way to manually add items to it. This is useful if you want to add items to the database that are not in the database yet.
+
+VectorDB provides two utility methods for adding items to the database: `vectordb.add_instance` or `vectordb.add_text`. Note that for adding the instance, you need to provide the `get_vectordb_text` and an optional `get_vectordb_metadata` methods.
+
+### 1. Adding Model Instances
+
+```python
+post1 = models.create(title="post1", description="post1 description", user=user1) # provide valid user
+
+# add to vector database
+vectordb.add_instance(post1)
+```
+
+### 2. Adding Text to the Model
+
+To add text to the database, you can use `vectordb.add_text()`:
+
+```python
+vectordb.add_text(text="Hello text", id=3, metadata={"user_id": 1})
+```
+
+The `text` and `id` are required. Additionally, the `id` must be unique, or an error will occur. `metadata` can be `None` or any valid JSON.
 
 ## Summary
 
-In this tutorial we create a basic project to work with Django Vector Database. We have create all the views and forms we need to create and view posts. Next lets integrated django vector database
+Great! That was a quickstart to `django-vectordb`. We've created a blogging site and added extremely fast vector search to it. If you want to get a more in depth understanding of how `vectordb` head on over to [the tutorial][tutorial].
+
+[admin-post]: http://127.0.0.1:8000/admin/blog/post/
+[admin-vectordb]: http://127.0.0.1:8000/admin/vectordb/vector/
+[django-queries]: https://docs.djangoproject.com/en/4.2/topics/db/queries/
+[tutorial]: 1-project-setup.md

@@ -1,6 +1,6 @@
-# Quickstart
+# Tutorial 1: Project Setup
 
-We're going to create a blogging site then add vector search to it through `django-vectordb`.
+We're going to create a blogging site then add vector search to it through `django-vectordb`. We will
 
 ## Project setup
 
@@ -11,7 +11,7 @@ Create a new Django project named `tutorial`, then start a new app called `blog`
     python3 -m venv env
     source env/bin/activate  # On Windows use `env\Scripts\activate`
 
-    # Install Django and Django REST framework into the virtual environment
+    # Install Django and VectorDB into the virtual environment
     pip install django
     pip install django-vectordb[standard] # include optional dependencies
 

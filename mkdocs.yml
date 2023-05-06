@@ -7,6 +7,8 @@ repo_url: https://github.com/pkavumba/django-vectordb
 markdown_extensions:
   - toc:
       anchorlink: True
+theme:
+  name: material
 
 nav:
   - Home: "index.md"
