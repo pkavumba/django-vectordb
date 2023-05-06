@@ -225,7 +225,7 @@ class BlogConfig(AppConfig):
 
 These signals will sync the vectors when you create and delete instances. Note that signals are not called in bulk create, so you will need to sync manually when using those methods.
 
-Ensure that your models implement the `get_text()` and/or `serialize()` methods for proper syncing.
+Ensure that your models implement the `get_vectordb_text()` and/or `get_vectordb_metadata()` methods for proper syncing.
 
 ### Searching
 
@@ -279,6 +279,26 @@ vectordb.filter(text__icontains="Apple", metadata__title__icontains="IPhone", me
 ```
 
 Refer to the [Django documentation](https://docs.djangoproject.com/en/4.2/topics/db/queries/) on querying the `JSONField` for more information on filtering.
+
+---
+
+## Settings
+
+You can customize `vectordb` by providing your settings in the `settings.py` file of your project. The following settings are available:
+
+```python
+    # settings.py
+    DJANGO_VECTOR_DB = {
+        "DEFAULT_EMBEDDING_CLASS": ..., # Default: "vectordb.embedding_functions.SentenceTransformerEncoder",
+        "DEFAULT_EMBEDDING_MODEL": ..., # Default: "all-MiniLM-L6-v2",
+        # Can be "cosine" or "l2"
+        "DEFAULT_EMBEDDING_SPACE": ..., # Default "l2"
+        "DEFAULT_EMBEDDING_DIMENSION": ..., # Default is 384 for "all-MiniLM-L6-v2"
+        "DEFAULT_MAX_N_RESULTS": 10, # Number of results to return from search maximum is default is 10
+        "DEFAULT_MIN_SCORE": 0.0, # Minimum score to return from search default is 0.0
+        "DEFAULT_MAX_BRUTEFORCE_N": 10_000, # Maximum number of items to search using brute force default is 10_000. If the number of items is greater than this number, the search will be done using the HNSW index.
+    }
+```
 
 ---
 

@@ -297,9 +297,27 @@ vectordb.add_text(text="Hello text", id=3, metadata={"user_id": 1})
 
 The `text` and `id` are required. Additionally, the `id` must be unique, or an error will occur. `metadata` can be `None` or any valid JSON.
 
+## Settings
+
+You can customize `vectordb` by providing your settings in the `settings.py` file of your project. The following settings are available:
+
+```python
+    # settings.py
+    DJANGO_VECTOR_DB = {
+        "DEFAULT_EMBEDDING_CLASS": ..., # Default: "vectordb.embedding_functions.SentenceTransformerEncoder",
+        "DEFAULT_EMBEDDING_MODEL": ..., # Default: "all-MiniLM-L6-v2",
+        # Can be "cosine" or "l2"
+        "DEFAULT_EMBEDDING_SPACE": ..., # Default "l2"
+        "DEFAULT_EMBEDDING_DIMENSION": ..., # Default is 384 for "all-MiniLM-L6-v2"
+        "DEFAULT_MAX_N_RESULTS": 10, # Number of results to return from search maximum is default is 10
+        "DEFAULT_MIN_SCORE": 0.0, # Minimum score to return from search default is 0.0
+        "DEFAULT_MAX_BRUTEFORCE_N": 10_000, # Maximum number of items to search using brute force default is 10_000. If the number of items is greater than this number, the search will be done using the HNSW index.
+    }
+```
+
 ## Summary
 
-Great! That was a quickstart to `django-vectordb`. We've created a blogging site and added extremely fast vector search to it. If you want to get a more in depth understanding of how `vectordb` head on over to [the tutorial][tutorial].
+Great! That was a quickstart to `django-vectordb`. We've created a blogging site and added extremely fast vector search to it. If you want to get a more in depth understanding of `vectordb` head on over to [the tutorial][tutorial].
 
 [admin-post]: http://127.0.0.1:8000/admin/blog/post/
 [admin-vectordb]: http://127.0.0.1:8000/admin/vectordb/vector/
