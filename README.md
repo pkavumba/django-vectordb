@@ -2,6 +2,12 @@
 
 ---
 
+[![pypi-version]][pypi]
+
+**Adding extremely fast, low-latency, and scalable vector search to django apps.**
+
+Full documentation for the project is available at [https://pkavumba.github.io/django-vectordb/][docs].
+
 Django Vector DB is a powerful and flexible toolkit for adding vector search capabilities to your Django applications. It is built on top of lightening fast nearest neighbor search library: hnswlib.
 
 Some reasons you might want to use Django Vector DB:
@@ -319,3 +325,4 @@ tox
 [hnswlib]: https://github.com/nmslib/hnswlib
 [drf]: https://www.django-rest-framework.org
 [django-filters]: https://pypi.org/project/django-filter/
+[docs]: https://pkavumba.github.io/django-vectordb/
