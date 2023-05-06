@@ -165,7 +165,7 @@ VectorDB provides two utility methods for adding items to the database: `vectord
 ##### 1. Adding Model Instances
 
 ```python
-post1 = models.create(title="post1", description="post1 description", user=user1) # provide valid user
+post1 = Post.objects.create(title="post1", description="post1 description", user=user1) # provide valid user
 
 # add to vector database
 vectordb.add_instance(post1)
