@@ -327,3 +327,4 @@ tox
 [django-filters]: https://pypi.org/project/django-filter/
 [docs]: https://pkavumba.github.io/django-vectordb/
 [pypi]: https://pypi.org/project/django-vectordb/
+[pypi-version]: https://img.shields.io/pypi/v/django-vectordb.svg
