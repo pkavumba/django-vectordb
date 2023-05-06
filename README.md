@@ -326,3 +326,4 @@ tox
 [drf]: https://www.django-rest-framework.org
 [django-filters]: https://pypi.org/project/django-filter/
 [docs]: https://pkavumba.github.io/django-vectordb/
+[pypi]: https://pypi.org/project/django-vectordb/
