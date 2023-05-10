@@ -712,7 +712,7 @@
   
 
 
-<h1 id="django-vectordb"><a class="toclink" href="#django-vectordb">Django VectorDB</a></h1>
+<h1 id="django-vectordb">Django VectorDB</h1>
 <hr />
 <p>Django Vector DB is a powerful and flexible toolkit for adding vector search capabilities to your Django applications. It is built on top of lightening fast nearest neighbor search library: hnswlib.</p>
 <p>Some reasons you might want to use Django Vector DB:</p>
@@ -726,7 +726,7 @@
 <li>Out of the box support for incremental updates, allowing you to add or update data without rebuilding the entire index.</li>
 <li>Extensive documentation and support for easy implementation and troubleshooting.</li>
 </ul>
-<h2 id="requirements"><a class="toclink" href="#requirements">Requirements</a></h2>
+<h2 id="requirements">Requirements</h2>
 <hr />
 <p>Django VectorDB requires the following:</p>
 <ul>
@@ -744,199 +744,261 @@ each Python and Django series.</p>
 <li><a href="https://pypi.org/project/django-filter/">django-filters</a> - Add metadata filtering support on the API endpoint.</li>
 </ul>
 <hr />
-<h2 id="installation"><a class="toclink" href="#installation">Installation</a></h2>
+<h2 id="installation">Installation</h2>
 <p>Install using <code>pip</code>, it is recommended that you install the optional packages with:</p>
-<pre><code class="language-bash">    pip install &quot;django-vectordb[standard]&quot; # This will install the optional dependencies above.
-</code></pre>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># This will install the optional dependencies above.</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;django-vectordb[standard]&quot;</span>
+</span></code></pre></div>
 <p>If you dont want to install the optional packages you can run:</p>
-<pre><code class="language-bash">    pip install django-vectordb
-</code></pre>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pip<span class="w"> </span>install<span class="w"> </span>django-vectordb
+</span></code></pre></div>
 <p>Add <code>'django-vectordb'</code> to your <code>INSTALLED_APPS</code> setting.</p>
-<pre><code class="language-python">    INSTALLED_APPS = [
-        ...
-        'vectordb',
-    ]
-</code></pre>
+<div class="language-py highlight"><span class="filename">settings.py</span><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="o">...</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="hll">    <span class="s1">&#39;vectordb&#39;</span><span class="p">,</span>
+</span></span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="p">]</span>
+</span></code></pre></div>
 <p>Run the migrations to create the <code>vectordb</code> table</p>
-<pre><code class="language-bash">$ ./manage.py migrate
-</code></pre>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>./manage.py<span class="w"> </span>migrate
+</span></code></pre></div>
 <p>If you're intending to use the API, you'll probably also want to add vectordb.urls. Add the following to your root <code>urls.py</code> file.</p>
-<pre><code class="language-python">    urlpatterns = [
-        ...
-        path('api/', include('vectordb.urls'))
-    ]
-</code></pre>
+<div class="language-python highlight"><span class="filename">urls.py</span><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    <span class="o">...</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="hll">    <span class="n">path</span><span class="p">(</span><span class="s1">&#39;api/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">&#39;vectordb.urls&#39;</span><span class="p">))</span>
+</span></span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="p">]</span>
+</span></code></pre></div>
 <p>Note: that the URL path can be whatever you want.</p>
 <p>This will expose endpoints for all CRUD actions (<code>/api/vectordb/</code>) and searching (<code>/api/vectordb/search/</code>).</p>
 <hr />
-<h2 id="example"><a class="toclink" href="#example">Example</a></h2>
+<h2 id="example">Example</h2>
 <p>Lets beging with a simple example for blog posts</p>
-<pre><code class="language-python">
-from django.db import models
-User = get_user_model() #import get_user_model first
-
-class Post(models.Model):
-    title = models.CharField(max_length=100)
-    description = models.TextField()
-    user = models.ForeignKey(User, on_delete = models.CASCADE)
-
-    def __str__(self):
-        return self.title
-</code></pre>
-<h3 id="1-importing"><a class="toclink" href="#1-importing">1. Importing</a></h3>
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/models.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-5-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-5-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-5-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-5-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-5-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-5-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-5-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-5-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-5-10">10</a></span>
+<span class="normal"><a href="#__codelineno-5-11">11</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="kn">from</span> <span class="nn">django.contrib.auth</span> <span class="kn">import</span> <span class="n">get_user_model</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="n">User</span> <span class="o">=</span> <span class="n">get_user_model</span><span class="p">()</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4"></a>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5"></a><span class="k">class</span> <span class="nc">Post</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6"></a>    <span class="n">title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7"></a>    <span class="n">description</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">()</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8"></a>    <span class="n">user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">on_delete</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9"></a>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10"></a>    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span>
+</span></code></pre></div></td></tr></table></div>
+<h3 id="1-importing">1. Importing</h3>
 <p>To begin working with VectorDB, you'll first need to import it into your project. There are two ways to do this, depending on whether you'd like to use the simple proxy to the vector models manager, <code>Vector.objects</code>, or the Vector model directly.</p>
-<h4 id="option-1-import-the-simple-proxy-recommended"><a class="toclink" href="#option-1-import-the-simple-proxy-recommended">Option 1: Import the simple proxy [Recommended]</a></h4>
-<pre><code class="language-python">from vectordb import vectordb
-</code></pre>
-<h4 id="option-2-import-the-vector-model-directly"><a class="toclink" href="#option-2-import-the-vector-model-directly">Option 2: Import the Vector model directly</a></h4>
-<pre><code class="language-python">from vectordb import get_vectordb_model
-
-VectorModel = get_vectordb_model()
-</code></pre>
+<h4 id="option-1-import-the-simple-proxy-recommended">Option 1: Import the simple proxy [Recommended]</h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span> <span class="nn">vectordb</span> <span class="kn">import</span> <span class="n">vectordb</span>
+</span></code></pre></div>
+<h4 id="option-2-import-the-vector-model-directly">Option 2: Import the Vector model directly</h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span> <span class="nn">vectordb</span> <span class="kn">import</span> <span class="n">get_vectordb_model</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">VectorModel</span> <span class="o">=</span> <span class="n">get_vectordb_model</span><span class="p">()</span>
+</span></code></pre></div>
 <p>With either of these imports, you'll have access to all the Django manager functions available on the object. Note that you can run the commands detailed below using <code>vectordb</code> or <code>VectorModel.objects</code>, whichever you've chosen to import. For the rest of this guide we will use <code>vectordb</code>.</p>
 <p>Now that you've imported VectorDB, it's time to dive in and explore its powerful features!</p>
-<h3 id="populating-the-vector-database"><a class="toclink" href="#populating-the-vector-database">Populating the Vector Database</a></h3>
+<h3 id="populating-the-vector-database">Populating the Vector Database</h3>
 <p>First, let's make a few updates to the model to allow VectorDB to handle most tasks for us: add <code>get_vectordb_text</code> and <code>get_vectordb_metadata</code> methods.</p>
-<pre><code class="language-python">from django.db import models
-User = get_user_model()
-
-class Post(models.Model):
-    title = models.CharField(max_length=100)
-    description = models.TextField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.title
-
-    def get_vectordb_text(self):
-        # Use title and description for vector search
-        return f&quot;{self.title} -- {self.description}&quot;
-
-    def get_vectordb_metadata(self):
-        # Enable filtering by any of these metadata
-        return {&quot;title&quot;: self.title, &quot;description&quot;: self.description, &quot;user_id&quot;: self.user.id, &quot;model&quot;: &quot;post&quot;}
-</code></pre>
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/models.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-8-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-8-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-8-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-8-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-8-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-8-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-8-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-8-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-8-10">10</a></span>
+<span class="normal"><a href="#__codelineno-8-11">11</a></span>
+<span class="normal"><a href="#__codelineno-8-12">12</a></span>
+<span class="normal"><a href="#__codelineno-8-13">13</a></span>
+<span class="normal"><a href="#__codelineno-8-14">14</a></span>
+<span class="normal"><a href="#__codelineno-8-15">15</a></span>
+<span class="normal"><a href="#__codelineno-8-16">16</a></span>
+<span class="normal"><a href="#__codelineno-8-17">17</a></span>
+<span class="normal"><a href="#__codelineno-8-18">18</a></span>
+<span class="normal"><a href="#__codelineno-8-19">19</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2"></a><span class="kn">from</span> <span class="nn">django.contrib.auth</span> <span class="kn">import</span> <span class="n">get_user_model</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3"></a><span class="n">User</span> <span class="o">=</span> <span class="n">get_user_model</span><span class="p">()</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4"></a>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5"></a><span class="k">class</span> <span class="nc">Post</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6"></a>    <span class="n">title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7"></a>    <span class="n">description</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">()</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8"></a>    <span class="n">user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9"></a>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10"></a>    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span>
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12"></a>
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13"></a><span class="hll">    <span class="k">def</span> <span class="nf">get_vectordb_text</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14"></a><span class="hll">        <span class="c1"># Use title and description for vector search</span>
+</span></span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15"></a><span class="hll">        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2"> -- </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s2">&quot;</span>
+</span></span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16"></a><span class="hll">
+</span></span><span id="__span-8-17"><a id="__codelineno-8-17" name="__codelineno-8-17"></a><span class="hll">    <span class="k">def</span> <span class="nf">get_vectordb_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span id="__span-8-18"><a id="__codelineno-8-18" name="__codelineno-8-18"></a><span class="hll">        <span class="c1"># Enable filtering by any of these metadata</span>
+</span></span><span id="__span-8-19"><a id="__codelineno-8-19" name="__codelineno-8-19"></a><span class="hll">        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;post&quot;</span><span class="p">}</span>
+</span></span></code></pre></div></td></tr></table></div>
 <p>In an existing project, you can run the <code>vectordb_sync</code> management command to add all items to the database.</p>
-<pre><code class="language-bash">./manage.py vectordb_sync &lt;app_name&gt; &lt;model_name&gt;
-</code></pre>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>./manage.py<span class="w"> </span>vectordb_sync<span class="w"> </span>&lt;app_name&gt;<span class="w"> </span>&lt;model_name&gt;
+</span></code></pre></div>
 <p>For this example:</p>
-<pre><code class="language-bash">./manage.py vectordb_sync blog Post
-</code></pre>
-<h4 id="manually-adding-items-to-the-vector-database"><a class="toclink" href="#manually-adding-items-to-the-vector-database">Manually adding items to the vector database</a></h4>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>./manage.py<span class="w"> </span>vectordb_sync<span class="w"> </span>blog<span class="w"> </span>Post
+</span></code></pre></div>
+<h4 id="manually-adding-items-to-the-vector-database">Manually adding items to the vector database</h4>
 <p>VectorDB provides two utility methods for adding items to the database: <code>vectordb.add_instance</code> or <code>vectordb.add_text</code>. Note that for adding the instance, you need to provide the <code>get_vectordb_text</code> and an optional <code>get_vectordb_metadata</code> methods.</p>
-<h5 id="1-adding-model-instances"><a class="toclink" href="#1-adding-model-instances">1. Adding Model Instances</a></h5>
-<pre><code class="language-python">post1 = models.create(title=&quot;post1&quot;, description=&quot;post1 description&quot;, user=user1) # provide valid user
-
-# add to vector database
-vectordb.add_instance(post1)
-</code></pre>
-<h5 id="2-adding-text-to-the-model"><a class="toclink" href="#2-adding-text-to-the-model">2. Adding Text to the Model</a></h5>
+<h5 id="1-adding-model-instances">1. Adding Model Instances</h5>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">post1</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;post1&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;post1 description&quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user1</span><span class="p">)</span> <span class="c1"># provide valid user</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="c1"># add to vector database</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="n">vectordb</span><span class="o">.</span><span class="n">add_instance</span><span class="p">(</span><span class="n">post1</span><span class="p">)</span>
+</span></code></pre></div>
+<h5 id="2-adding-text-to-the-model">2. Adding Text to the Model</h5>
 <p>To add text to the database, you can use <code>vectordb.add_text()</code>:</p>
-<pre><code class="language-python">vectordb.add_text(text=&quot;Hello text&quot;, id=3, metadata={&quot;user_id&quot;: 1})
-</code></pre>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">vectordb</span><span class="o">.</span><span class="n">add_text</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;Hello text&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+</span></code></pre></div>
 <p>The <code>text</code> and <code>id</code> are required. Additionally, the <code>id</code> must be unique, or an error will occur. <code>metadata</code> can be <code>None</code> or any valid JSON.</p>
-<h3 id="automatically-syncing-your-model-to-the-vector-database"><a class="toclink" href="#automatically-syncing-your-model-to-the-vector-database">Automatically Syncing Your Model to the vector database</a></h3>
+<h3 id="automatically-syncing-your-model-to-the-vector-database">Automatically Syncing Your Model to the vector database</h3>
 <p>To enable auto sync, import the following signals and register them with your models:</p>
-<pre><code class="language-python"># signals.py
-from django.db.models.signals import post_save, post_delete
-
-from vectordb.sync_signals import (
-    sync_vectordb_on_create_update,
-    sync_vectordb_on_delete,
-)
-
-from .models import Post
-
-post_save.connect(
-    sync_vectordb_on_create_update,
-    sender=Post,
-    dispatch_uid=&quot;update_vector_index_super_unique_id&quot;,
-)
-
-post_delete.connect(
-    sync_vectordb_on_delete,
-    sender=Post,
-    dispatch_uid=&quot;delete_vector_index_super_unique_id&quot;,
-)
-</code></pre>
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/signals.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-13-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-13-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-13-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-13-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-13-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-13-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-13-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-13-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-13-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-13-10">10</a></span>
+<span class="normal"><a href="#__codelineno-13-11">11</a></span>
+<span class="normal"><a href="#__codelineno-13-12">12</a></span>
+<span class="normal"><a href="#__codelineno-13-13">13</a></span>
+<span class="normal"><a href="#__codelineno-13-14">14</a></span>
+<span class="normal"><a href="#__codelineno-13-15">15</a></span>
+<span class="normal"><a href="#__codelineno-13-16">16</a></span>
+<span class="normal"><a href="#__codelineno-13-17">17</a></span>
+<span class="normal"><a href="#__codelineno-13-18">18</a></span>
+<span class="normal"><a href="#__codelineno-13-19">19</a></span>
+<span class="normal"><a href="#__codelineno-13-20">20</a></span>
+<span class="normal"><a href="#__codelineno-13-21">21</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1"></a><span class="c1"># signals.py</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2"></a><span class="kn">from</span> <span class="nn">django.db.models.signals</span> <span class="kn">import</span> <span class="n">post_save</span><span class="p">,</span> <span class="n">post_delete</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3"></a>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4"></a><span class="kn">from</span> <span class="nn">vectordb.sync_signals</span> <span class="kn">import</span> <span class="p">(</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5"></a>    <span class="n">sync_vectordb_on_create_update</span><span class="p">,</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6"></a>    <span class="n">sync_vectordb_on_delete</span><span class="p">,</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7"></a><span class="p">)</span>
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8"></a>
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9"></a><span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Post</span>
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10"></a>
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11"></a><span class="n">post_save</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12"></a>    <span class="n">sync_vectordb_on_create_update</span><span class="p">,</span>
+</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13"></a>    <span class="n">sender</span><span class="o">=</span><span class="n">Post</span><span class="p">,</span>
+</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14"></a>    <span class="n">dispatch_uid</span><span class="o">=</span><span class="s2">&quot;update_vector_index_super_unique_id&quot;</span><span class="p">,</span>
+</span><span id="__span-13-15"><a id="__codelineno-13-15" name="__codelineno-13-15"></a><span class="p">)</span>
+</span><span id="__span-13-16"><a id="__codelineno-13-16" name="__codelineno-13-16"></a>
+</span><span id="__span-13-17"><a id="__codelineno-13-17" name="__codelineno-13-17"></a><span class="n">post_delete</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+</span><span id="__span-13-18"><a id="__codelineno-13-18" name="__codelineno-13-18"></a>    <span class="n">sync_vectordb_on_delete</span><span class="p">,</span>
+</span><span id="__span-13-19"><a id="__codelineno-13-19" name="__codelineno-13-19"></a>    <span class="n">sender</span><span class="o">=</span><span class="n">Post</span><span class="p">,</span>
+</span><span id="__span-13-20"><a id="__codelineno-13-20" name="__codelineno-13-20"></a>    <span class="n">dispatch_uid</span><span class="o">=</span><span class="s2">&quot;delete_vector_index_super_unique_id&quot;</span><span class="p">,</span>
+</span><span id="__span-13-21"><a id="__codelineno-13-21" name="__codelineno-13-21"></a><span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
+<p>You can reduce the above code by using shortcut provided by vectordb as follows</p>
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/signals.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-14-1">1</a></span>
+<span class="normal"><a href="#__codelineno-14-2">2</a></span>
+<span class="normal"><a href="#__codelineno-14-3">3</a></span>
+<span class="normal"><a href="#__codelineno-14-4">4</a></span>
+<span class="normal"><a href="#__codelineno-14-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1"></a><span class="kn">from</span> <span class="nn">vectordb.shortcuts</span> <span class="kn">import</span> <span class="n">autosync_model_to_vectordb</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2"></a>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3"></a><span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Post</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4"></a>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5"></a><span class="n">autosync_model_to_vectordb</span><span class="p">(</span><span class="n">Post</span><span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
+<p>This will do exactly what we did above manually. It will also set the <code>dispatch_uid</code> for you.</p>
 <p>Then import the signals in your <code>apps.py</code></p>
-<pre><code class="language-python">from django.apps import AppConfig
-
-
-class BlogConfig(AppConfig):
-    default_auto_field = &quot;django.db.models.BigAutoField&quot;
-    name = &quot;blog&quot;
-
-    def ready(self):
-        import blog.signals
-</code></pre>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">AppConfig</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="k">class</span> <span class="nc">BlogConfig</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">):</span>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>    <span class="n">default_auto_field</span> <span class="o">=</span> <span class="s2">&quot;django.db.models.BigAutoField&quot;</span>
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;blog&quot;</span>
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>    <span class="k">def</span> <span class="nf">ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>        <span class="kn">import</span> <span class="nn">blog.signals</span>
+</span></code></pre></div>
 <p>These signals will sync the vectors when you create and delete instances. Note that signals are not called in bulk create, so you will need to sync manually when using those methods.</p>
 <p>Ensure that your models implement the <code>get_vectordb_text()</code> and/or <code>get_vectordb_metadata()</code> methods for proper syncing.</p>
-<h3 id="searching"><a class="toclink" href="#searching">Searching</a></h3>
+<h3 id="searching">Searching</h3>
 <p>To search, simply call <code>vectordb.search()</code>:</p>
-<pre><code class="language-python">vectordb.search(&quot;Some text&quot;, k=10) # k is the maximum number of results you want.
-</code></pre>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="n">vectordb</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;Some text&quot;</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> <span class="c1"># k is the maximum number of results you want.</span>
+</span></code></pre></div>
 <p>Note: search method returns a query whose results are order from best match. Each item will have the following fields: <code>id</code>, <code>content_object</code>, <code>object_id</code>, <code>content_type</code>, <code>text</code>, <code>embedding</code>, annotated <code>score</code>, and a property <code>vector</code> that returns the <code>np.ndarray</code> representation of the item. Because search gives us a <code>QuerySet</code> we can choose the fiels we want to see like sos:</p>
-<pre><code class="language-python">vectordb.search(&quot;Some text&quot;, k=10).only('text', 'content_object')
-</code></pre>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="n">vectordb</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;Some text&quot;</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">only</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="s1">&#39;content_object&#39;</span><span class="p">)</span>
+</span></code></pre></div>
 <p>Search doesn't only work for <code>text</code> you can also search for model instances:</p>
-<pre><code class="language-python">post1 = Post.objects.get(id=1)
-# Limit the search scope to a user with an id of 1
-results = vectordb.search(post1, k=10)
-</code></pre>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="n">post1</span> <span class="o">=</span> <span class="n">Post</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="c1"># Limit the search scope to a user with an id of 1</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="n">results</span> <span class="o">=</span> <span class="n">vectordb</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">post1</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span></code></pre></div>
 <p>This is also a way to get related posts to <code>post1</code>. Thus, you can use <code>vectordb</code> for recommendations as well.</p>
 <p>Note: Seaching by model instances will automatically scope the results to instances of that type. For example, if you search by <code>post1</code> you will only get results that are instances of <code>Post</code>.</p>
 <p>If <code>k</code> is not provided, the default value is 10.</p>
-<h3 id="filtering"><a class="toclink" href="#filtering">Filtering</a></h3>
+<h3 id="filtering">Filtering</h3>
 <p>You can filter on <code>text</code> or <code>metadata</code> with the full power of Django QuerySet filtering:</p>
-<pre><code class="language-python"># scope the search to user with an id 1
-vectordb.filter(metadata__user_id=1).search(&quot;Some text&quot;, k=10)
-
-# example two with more filters
-vectordb.filter(text__icontains=&quot;Apple&quot;, metadata__title__icontains=&quot;IPhone&quot;, metadata__description__icontains=&quot;2023&quot;).search(&quot;Apple new phone&quot;, k=10)
-</code></pre>
+<div class="language-py highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># scope the search to user with an id 1</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="n">vectordb</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">metadata__user_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;Some text&quot;</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="c1"># example two with more filters</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="n">vectordb</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">text__icontains</span><span class="o">=</span><span class="s2">&quot;Apple&quot;</span><span class="p">,</span> <span class="n">metadata__title__icontains</span><span class="o">=</span><span class="s2">&quot;IPhone&quot;</span><span class="p">,</span> <span class="n">metadata__description__icontains</span><span class="o">=</span><span class="s2">&quot;2023&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;Apple new phone&quot;</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span></code></pre></div>
 <p>We can also use model instances instead of text:</p>
-<pre><code class="language-python">post1 = Post.objects.get(id=1)
-# Limit the search scope to a user with an id of 1
-results = vectordb.filter(metadata__user_id=1).search(post1, k=10)
-
-# Scope the results to text which contains France, belonging to user with id 1 and created in 2023
-vectordb.filter(text__icontains=&quot;Apple&quot;, metadata__title__icontains=&quot;IPhone&quot;, metadata__description__icontains=&quot;2023&quot;).search(post1, k=10)
-</code></pre>
+<div class="language-py highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="n">post1</span> <span class="o">=</span> <span class="n">Post</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="c1"># Limit the search scope to a user with an id of 1</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="n">results</span> <span class="o">=</span> <span class="n">vectordb</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">metadata__user_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">post1</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="c1"># Scope the results to text which contains France, belonging to user with id 1 and created in 2023</span>
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="n">vectordb</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">text__icontains</span><span class="o">=</span><span class="s2">&quot;Apple&quot;</span><span class="p">,</span> <span class="n">metadata__title__icontains</span><span class="o">=</span><span class="s2">&quot;IPhone&quot;</span><span class="p">,</span> <span class="n">metadata__description__icontains</span><span class="o">=</span><span class="s2">&quot;2023&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">post1</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span></code></pre></div>
 <p>Refer to the <a href="https://docs.djangoproject.com/en/4.2/topics/db/queries/">Django documentation</a> on querying the <code>JSONField</code> for more information on filtering.</p>
 <hr />
-<h2 id="settings"><a class="toclink" href="#settings">Settings</a></h2>
+<h2 id="settings">Settings</h2>
 <p>You can customize <code>vectordb</code> by providing your settings in the <code>settings.py</code> file of your project. The following settings are available:</p>
-<pre><code class="language-python">    # settings.py
-    DJANGO_VECTOR_DB = {
-        &quot;DEFAULT_EMBEDDING_CLASS&quot;: ..., # Default: &quot;vectordb.embedding_functions.SentenceTransformerEncoder&quot;,
-        &quot;DEFAULT_EMBEDDING_MODEL&quot;: ..., # Default: &quot;all-MiniLM-L6-v2&quot;,
-        # Can be &quot;cosine&quot; or &quot;l2&quot;
-        &quot;DEFAULT_EMBEDDING_SPACE&quot;: ..., # Default &quot;l2&quot;
-        &quot;DEFAULT_EMBEDDING_DIMENSION&quot;: ..., # Default is 384 for &quot;all-MiniLM-L6-v2&quot;
-        &quot;DEFAULT_MAX_N_RESULTS&quot;: 10, # Number of results to return from search maximum is default is 10
-        &quot;DEFAULT_MIN_SCORE&quot;: 0.0, # Minimum score to return from search default is 0.0
-        &quot;DEFAULT_MAX_BRUTEFORCE_N&quot;: 10_000, # Maximum number of items to search using brute force default is 10_000. If the number of items is greater than this number, the search will be done using the HNSW index.
-    }
-</code></pre>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># settings.py</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="n">DJANGO_VECTOR_DB</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>    <span class="s2">&quot;DEFAULT_EMBEDDING_CLASS&quot;</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="c1"># Default: &quot;vectordb.embedding_functions.SentenceTransformerEncoder&quot;,</span>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>    <span class="s2">&quot;DEFAULT_EMBEDDING_MODEL&quot;</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="c1"># Default: &quot;all-MiniLM-L6-v2&quot;,</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>    <span class="c1"># Can be &quot;cosine&quot; or &quot;l2&quot;</span>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>    <span class="s2">&quot;DEFAULT_EMBEDDING_SPACE&quot;</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="c1"># Default &quot;l2&quot;</span>
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>    <span class="s2">&quot;DEFAULT_EMBEDDING_DIMENSION&quot;</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="c1"># Default is 384 for &quot;all-MiniLM-L6-v2&quot;</span>
+</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>    <span class="s2">&quot;DEFAULT_MAX_N_RESULTS&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="c1"># Number of results to return from search maximum is default is 10</span>
+</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a>    <span class="s2">&quot;DEFAULT_MIN_SCORE&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="c1"># Minimum score to return from search default is 0.0</span>
+</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a>    <span class="s2">&quot;DEFAULT_MAX_BRUTEFORCE_N&quot;</span><span class="p">:</span> <span class="mi">10_000</span><span class="p">,</span> <span class="c1"># Maximum number of items to search using brute force default is 10_000. If the number of items is greater than this number, the search will be done using the HNSW index.</span>
+</span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a><span class="p">}</span>
+</span></code></pre></div>
 <hr />
-<h2 id="quickstart"><a class="toclink" href="#quickstart">Quickstart</a></h2>
+<h2 id="quickstart">Quickstart</h2>
 <p>Can't wait to get started? The <a href="tutorial/quickstart/">quickstart guide</a> is the fastest way to get up and running, and building APIs with REST framework.</p>
 <hr />
-<h2 id="development"><a class="toclink" href="#development">Development</a></h2>
+<h2 id="development">Development</h2>
 <p>Clone the repository</p>
-<pre><code class="language-bash">$ git clone
-</code></pre>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>$<span class="w"> </span>git<span class="w"> </span>clone
+</span></code></pre></div>
 <p>Install the app in editable mode with all dev dependencies:</p>
-<pre><code class="language-bash">pip install -e .[dev]
-</code></pre>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>dev<span class="o">]</span>
+</span></code></pre></div>
 <p>This command will install the app and its dev dependencies specified in the <code>setup.cfg</code> file. The <code>-e</code> flag installs the package in editable mode, which means that any changes you make to the app's source code will be reflected immediately without needing to reinstall the package. The <code>[dev]</code> part tells <code>pip</code> to install the dependencies listed under the "dev" section in the <code>options.extras_require</code> of the <code>setup.cfg</code> file.</p>
 <p>Run tests</p>
-<pre><code class="language-bash">pytest
-</code></pre>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>pytest
+</span></code></pre></div>
 <p>Or</p>
-<pre><code class="language-bash">tox
-</code></pre>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>tox
+</span></code></pre></div>
 
 
 
@@ -974,7 +1036,7 @@ vectordb.filter(text__icontains=&quot;Apple&quot;, metadata__title__icontains=&q
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": ".", "features": ["content.code.copy", "content.code.select"], "search": "assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="assets/javascripts/bundle.fac441b0.min.js"></script>
