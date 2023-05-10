@@ -42,22 +42,23 @@ The following packages are optional:
 Install using `pip`, it is recommended that you install the optional packages with:
 
 ```bash
-    pip install "django-vectordb[standard]" # This will install the optional dependencies above.
+# This will install the optional dependencies above.
+pip install "django-vectordb[standard]"
 ```
 
 If you dont want to install the optional packages you can run:
 
 ```bash
-    pip install django-vectordb
+pip install django-vectordb
 ```
 
 Add `'django-vectordb'` to your `INSTALLED_APPS` setting.
 
-```python
-    INSTALLED_APPS = [
-        ...
-        'vectordb',
-    ]
+```py hl_lines="3" title="settings.py"
+INSTALLED_APPS = [
+    ...
+    'vectordb',
+]
 ```
 
 Run the migrations to create the `vectordb` table
@@ -68,11 +69,11 @@ $ ./manage.py migrate
 
 If you're intending to use the API, you'll probably also want to add vectordb.urls. Add the following to your root `urls.py` file.
 
-```python
-    urlpatterns = [
-        ...
-        path('api/', include('vectordb.urls'))
-    ]
+```python hl_lines="3" title="urls.py"
+urlpatterns = [
+    ...
+    path('api/', include('vectordb.urls'))
+]
 ```
 
 Note: that the URL path can be whatever you want.
@@ -85,10 +86,11 @@ This will expose endpoints for all CRUD actions (`/api/vectordb/`) and searching
 
 Lets beging with a simple example for blog posts
 
-```python
+```python linenums="1" title="blog/models.py"
 
 from django.db import models
-User = get_user_model() #import get_user_model first
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 class Post(models.Model):
     title = models.CharField(max_length=100)
@@ -125,8 +127,9 @@ Now that you've imported VectorDB, it's time to dive in and explore its powerful
 
 First, let's make a few updates to the model to allow VectorDB to handle most tasks for us: add `get_vectordb_text` and `get_vectordb_metadata` methods.
 
-```python
+```python linenums="1" title="blog/models.py" hl_lines="13-19"
 from django.db import models
+from django.contrib.auth import get_user_model
 User = get_user_model()
 
 class Post(models.Model):
@@ -185,7 +188,7 @@ The `text` and `id` are required. Additionally, the `id` must be unique, or an e
 
 To enable auto sync, import the following signals and register them with your models:
 
-```python
+```python linenums="1" title="blog/signals.py"
 # signals.py
 from django.db.models.signals import post_save, post_delete
 
@@ -208,6 +211,18 @@ post_delete.connect(
     dispatch_uid="delete_vector_index_super_unique_id",
 )
 ```
+
+You can reduce the above code by using shortcut provided by vectordb as follows
+
+```python linenums="1" title="blog/signals.py"
+from vectordb.shortcuts import autosync_model_to_vectordb
+
+from .models import Post
+
+autosync_model_to_vectordb(Post)
+```
+
+This will do exactly what we did above manually. It will also set the `dispatch_uid` for you.
 
 Then import the signals in your `apps.py`
 
@@ -259,7 +274,7 @@ If `k` is not provided, the default value is 10.
 
 You can filter on `text` or `metadata` with the full power of Django QuerySet filtering:
 
-```python
+```py
 # scope the search to user with an id 1
 vectordb.filter(metadata__user_id=1).search("Some text", k=10)
 
@@ -269,7 +284,7 @@ vectordb.filter(text__icontains="Apple", metadata__title__icontains="IPhone", me
 
 We can also use model instances instead of text:
 
-```python
+```py
 post1 = Post.objects.get(id=1)
 # Limit the search scope to a user with an id of 1
 results = vectordb.filter(metadata__user_id=1).search(post1, k=10)
@@ -287,17 +302,17 @@ Refer to the [Django documentation](https://docs.djangoproject.com/en/4.2/topics
 You can customize `vectordb` by providing your settings in the `settings.py` file of your project. The following settings are available:
 
 ```python
-    # settings.py
-    DJANGO_VECTOR_DB = {
-        "DEFAULT_EMBEDDING_CLASS": ..., # Default: "vectordb.embedding_functions.SentenceTransformerEncoder",
-        "DEFAULT_EMBEDDING_MODEL": ..., # Default: "all-MiniLM-L6-v2",
-        # Can be "cosine" or "l2"
-        "DEFAULT_EMBEDDING_SPACE": ..., # Default "l2"
-        "DEFAULT_EMBEDDING_DIMENSION": ..., # Default is 384 for "all-MiniLM-L6-v2"
-        "DEFAULT_MAX_N_RESULTS": 10, # Number of results to return from search maximum is default is 10
-        "DEFAULT_MIN_SCORE": 0.0, # Minimum score to return from search default is 0.0
-        "DEFAULT_MAX_BRUTEFORCE_N": 10_000, # Maximum number of items to search using brute force default is 10_000. If the number of items is greater than this number, the search will be done using the HNSW index.
-    }
+# settings.py
+DJANGO_VECTOR_DB = {
+    "DEFAULT_EMBEDDING_CLASS": ..., # Default: "vectordb.embedding_functions.SentenceTransformerEncoder",
+    "DEFAULT_EMBEDDING_MODEL": ..., # Default: "all-MiniLM-L6-v2",
+    # Can be "cosine" or "l2"
+    "DEFAULT_EMBEDDING_SPACE": ..., # Default "l2"
+    "DEFAULT_EMBEDDING_DIMENSION": ..., # Default is 384 for "all-MiniLM-L6-v2"
+    "DEFAULT_MAX_N_RESULTS": 10, # Number of results to return from search maximum is default is 10
+    "DEFAULT_MIN_SCORE": 0.0, # Minimum score to return from search default is 0.0
+    "DEFAULT_MAX_BRUTEFORCE_N": 10_000, # Maximum number of items to search using brute force default is 10_000. If the number of items is greater than this number, the search will be done using the HNSW index.
+}
 ```
 
 ---

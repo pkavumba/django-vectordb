@@ -48,22 +48,23 @@ The following packages are optional:
 Install using `pip`, it is recommended that you install the optional packages with:
 
 ```bash
-    pip install "django-vectordb[standard]" # This will install the optional dependencies above.
+# This will install the optional dependencies above.
+pip install "django-vectordb[standard]"
 ```
 
 If you dont want to install the optional packages you can run:
 
 ```bash
-    pip install django-vectordb
+pip install django-vectordb
 ```
 
 Add `'django-vectordb'` to your `INSTALLED_APPS` setting.
 
 ```python
-    INSTALLED_APPS = [
-        ...
-        'vectordb',
-    ]
+INSTALLED_APPS = [
+    ...
+    'vectordb',
+]
 ```
 
 Run the migrations to create the `vectordb` table
@@ -75,10 +76,10 @@ $ ./manage.py migrate
 If you're intending to use the API, you'll probably also want to add vectordb.urls. Add the following to your root `urls.py` file.
 
 ```python
-    urlpatterns = [
-        ...
-        path('api/', include('vectordb.urls'))
-    ]
+urlpatterns = [
+    ...
+    path('api/', include('vectordb.urls'))
+]
 ```
 
 Note: that the URL path can be whatever you want.
@@ -270,17 +271,17 @@ Refer to the [Django documentation](https://docs.djangoproject.com/en/4.2/topics
 You can provide your settings in the `settings.py` file of your project. The following settings are available:
 
 ```python
-    # settings.py
-    DJANGO_VECTOR_DB = {
-        "DEFAULT_EMBEDDING_CLASS": ..., # Default: "vectordb.embedding_functions.SentenceTransformerEncoder",
-        "DEFAULT_EMBEDDING_MODEL": ..., # Default: "all-MiniLM-L6-v2",
-        # Can be "cosine" or "l2"
-        "DEFAULT_EMBEDDING_SPACE": ..., # Default "l2"
-        "DEFAULT_EMBEDDING_DIMENSION": ..., # Default is 384 for "all-MiniLM-L6-v2"
-        "DEFAULT_MAX_N_RESULTS": 10, # Number of results to return from search maximum is default is 10
-        "DEFAULT_MIN_SCORE": 0.0, # Minimum score to return from search default is 0.0
-        "DEFAULT_MAX_BRUTEFORCE_N": 10_000, # Maximum number of items to search using brute force default is 10_000. If the number of items is greater than this number, the search will be done using the HNSW index.
-    }
+# settings.py
+DJANGO_VECTOR_DB = {
+    "DEFAULT_EMBEDDING_CLASS": ..., # Default: "vectordb.embedding_functions.SentenceTransformerEncoder",
+    "DEFAULT_EMBEDDING_MODEL": ..., # Default: "all-MiniLM-L6-v2",
+    # Can be "cosine" or "l2"
+    "DEFAULT_EMBEDDING_SPACE": ..., # Default "l2"
+    "DEFAULT_EMBEDDING_DIMENSION": ..., # Default is 384 for "all-MiniLM-L6-v2"
+    "DEFAULT_MAX_N_RESULTS": 10, # Number of results to return from search maximum is default is 10
+    "DEFAULT_MIN_SCORE": 0.0, # Minimum score to return from search default is 0.0
+    "DEFAULT_MAX_BRUTEFORCE_N": 10_000, # Maximum number of items to search using brute force default is 10_000. If the number of items is greater than this number, the search will be done using the HNSW index.
+}
 ```
 
 ## Quickstart

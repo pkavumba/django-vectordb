@@ -13,3 +13,5 @@ class Post(models.Model):
 
     def get_vectordb_metadata(self):
         return {"title": self.title, "description": self.description}
+    
+

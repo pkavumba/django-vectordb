@@ -8,16 +8,19 @@ from vectordb.sync_signals import (
     sync_vectordb_on_delete,
 )
 
+from vectordb.shortcuts import autosync_model_to_vectordb
+
 from .models import Post
 
-post_save.connect(
-    sync_vectordb_on_create_update,
-    sender=Post,
-    dispatch_uid="update_vector_index_super_unique_id",
-)
+autosync_model_to_vectordb(Post)
+# post_save.connect(
+#     sync_vectordb_on_create_update,
+#     sender=Post,
+#     dispatch_uid="update_vector_index_super_unique_id",
+# )
 
-post_delete.connect(
-    sync_vectordb_on_delete,
-    sender=Post,
-    dispatch_uid="delete_vector_index_super_unique_id",
-)
+# post_delete.connect(
+#     sync_vectordb_on_delete,
+#     sender=Post,
+#     dispatch_uid="delete_vector_index_super_unique_id",
+# )
