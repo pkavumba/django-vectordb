@@ -5,7 +5,6 @@ except ImportError:
 
 from .views import VectorViewSet
 
-
 router = SimpleRouter()
 router.register(r"vectordb", VectorViewSet)
 

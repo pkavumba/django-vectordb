@@ -1,9 +1,7 @@
 # Inspired by rest framework
 from django.conf import settings
-
 from django.core.signals import setting_changed
 from django.utils.module_loading import import_string
-
 
 DEFAULTS = {
     "DEFAULT_EMBEDDING_CLASS": "vectordb.embedding_functions.SentenceTransformerEncoder",

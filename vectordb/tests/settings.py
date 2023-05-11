@@ -1,6 +1,5 @@
 from pathlib import Path
 
-
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,

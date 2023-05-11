@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from typing import Any
-
-
 import abc
+from typing import Any
 
 
 class SingletonMeta(type):

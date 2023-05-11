@@ -1,12 +1,11 @@
 from __future__ import annotations
+
 from typing import Optional
+
 import numpy as np
-
-from django.db import models
-from django.contrib.contenttypes.models import ContentType
-
 from celery import shared_task
-
+from django.contrib.contenttypes.models import ContentType
+from django.db import models
 
 from .models import Vector
 from .utils import get_embedding_function

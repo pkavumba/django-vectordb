@@ -1,6 +1,7 @@
 import pytest
 from django.contrib.contenttypes.models import ContentType
 from django.db.utils import IntegrityError
+
 from vectordb.models import Vector
 
 

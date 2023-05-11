@@ -1,5 +1,6 @@
-import pytest
 import numpy as np
+import pytest
+
 from vectordb.ann.indexes import BFIndex, HNSWIndex
 
 nb = 100

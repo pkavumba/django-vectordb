@@ -1,9 +1,0 @@
-<!-- blog/post_create.html -->
-{% extends "base.html" %} {% block content %}
-<h1>Create New Post</h1>
-<form method="post">
-  {% csrf_token %} {{ form.as_p }}
-  <button type="submit">Save Post</button>
-</form>
-<a href="{% url 'post_list' %}">Back to Posts List</a>
-{% endblock %}

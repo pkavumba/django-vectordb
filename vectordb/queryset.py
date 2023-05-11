@@ -2,11 +2,14 @@ from __future__ import annotations
 
 import logging
 import time
+
 import numpy as np
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from .ann.indexes import HNSWIndex, BFIndex
+
 from vectordb.settings import vectordb_settings
+
+from .ann.indexes import BFIndex, HNSWIndex
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(" VectorDB ")

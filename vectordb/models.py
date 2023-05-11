@@ -1,12 +1,12 @@
 from typing import Iterable, Optional
+
 import numpy as np
-from django.db import models
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
+from django.db import models
 
 from .manager import VectorManager
-
-from django.core.exceptions import ValidationError
 
 
 def validate_embedding(value):

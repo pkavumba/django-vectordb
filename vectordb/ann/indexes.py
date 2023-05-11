@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import abc
+import json
 import os
 from typing import Any
+
 import hnswlib
 import numpy as np
-import json
 
 from . import AbstractIndex
 

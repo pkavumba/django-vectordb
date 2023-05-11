@@ -1,11 +1,12 @@
 try:
-    from rest_framework import viewsets, filters
+    from rest_framework import filters, viewsets
 except ImportError:
     raise ImportError("rest_framework is required for the api to work")
 
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django_filters.rest_framework import DjangoFilterBackend
+
 from .models import Vector
 from .serializers import VectorSerializer
 

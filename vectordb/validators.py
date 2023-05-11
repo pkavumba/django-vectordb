@@ -1,11 +1,12 @@
 from __future__ import annotations
-from typing import Optional
-import numpy as np
-from django.core.exceptions import ValidationError
-from django.db.utils import IntegrityError
-from django.db import models
 
 import logging
+from typing import Optional
+
+import numpy as np
+from django.core.exceptions import ValidationError
+from django.db import models
+from django.db.utils import IntegrityError
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

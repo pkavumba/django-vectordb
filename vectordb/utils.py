@@ -1,20 +1,22 @@
 from __future__ import annotations
 
-import logging
-import json
-import os
 import importlib
+import json
+import logging
+import os
+
+import numpy as np
 from django.conf import settings
 from django.core.serializers import serialize
 from django.db import models
-import numpy as np
-from vectordb.settings import vectordb_settings
 
+from vectordb.settings import vectordb_settings
 
 from .validators import validate_vector_data
 
 try:
     import celery
+
     from . import tasks
 
     has_celery = True

@@ -1,17 +1,18 @@
 from __future__ import annotations
 
-import os
 import logging
+import os
 import time
+
 from django.conf import settings
 from django.db import models
 
 from .ann.indexes import HNSWIndex
 from .queryset import VectorQuerySet
 from .utils import (
-    get_embedding_function,
     create_vector_from_instance,
     create_vector_from_text,
+    get_embedding_function,
 )
 
 # Get an instance of a logger

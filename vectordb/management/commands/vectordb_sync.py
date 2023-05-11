@@ -1,6 +1,7 @@
 from django.apps import apps
-from django.core.management.base import BaseCommand
 from django.contrib.contenttypes.models import ContentType
+from django.core.management.base import BaseCommand
+
 from vectordb.models import Vector
 
 
