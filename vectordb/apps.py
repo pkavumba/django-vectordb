@@ -6,4 +6,4 @@ class VectordbConfig(AppConfig):
     name = "vectordb"
 
     def ready(self) -> None:
-        from .signals import delete_vector_index, update_vector_index
+        from .signals import delete_vector_index, update_vector_index  # noqa

@@ -4,17 +4,15 @@ site_description: Django Vector Database - Adds fast vector search app any Djang
 
 repo_url: https://github.com/pkavumba/django-vectordb
 
-markdown_extensions:
-  - toc:
-      anchorlink: True
 theme:
   name: material
   features:
     - content.code.copy
     - content.code.select
 
-
 markdown_extensions:
+  - toc:
+    anchorlink: True
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
@@ -23,7 +21,6 @@ markdown_extensions:
   - pymdownx.snippets
   - pymdownx.superfences
   - admonition
-
 
 nav:
   - Home: "index.md"

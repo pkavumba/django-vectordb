@@ -41,6 +41,7 @@ class Command(BaseCommand):
             have_been_deleted_qs.delete()
 
         count_adds = 0
+        count_updates = 0
         count_skips = 0
         # Add instances to Vector that are not already there
         for instance in instances:
@@ -48,8 +49,28 @@ class Command(BaseCommand):
                 content_type=content_type,
                 object_id=instance.pk,
             ).exists():
-                self.stdout.write(f"Skipping {instance} because it already exists")
-                count_skips += 1
+                db_instance = Vector.objects.get(
+                    content_type=content_type,
+                    object_id=instance.pk,
+                )
+                if (
+                    db_instance.text != instance.get_vectordb_text()
+                    or db_instance.metadata != instance.get_vectordb_metadata()
+                ):
+                    db_instance.text = instance.get_vectordb_text()
+                    db_instance.metadata = instance.get_vectordb_metadata()
+                    db_instance.save()
+                    self.stdout.write(
+                        self.style.SUCCESS(
+                            f"Updated {instance} in Vector model because text/metadata changed"
+                        )
+                    )
+                    count_updates += 1
+                else:
+                    self.stdout.write(
+                        f"Skipping {instance} because it exists and hasn't changed"
+                    )
+                    count_skips += 1
             else:
                 Vector.objects.add_instance(instance)
                 self.stdout.write(
@@ -59,6 +80,8 @@ class Command(BaseCommand):
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Synced Vector model with {model_name}. {count_adds} added, {count_skips} skipped, {num_to_remove} removed."
+                f"Synced Vector model with {model_name}. {count_adds} added, "
+                f"{count_updates} updated, {count_skips} skipped,"
+                f" {num_to_remove} removed."
             )
         )

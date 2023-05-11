@@ -1,7 +1,7 @@
-from typing import Iterable, Optional
+from __future__ import annotations
 
 import numpy as np
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -23,7 +23,7 @@ class Vector(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    embedding = models.BinaryField(validators=[validate_embedding], max_length=None)
+    embedding = models.BinaryField(validators=[validate_embedding])
     text = models.TextField()
     metadata = models.JSONField(null=True, blank=True)
     object_id = models.CharField(max_length=255, null=True, blank=True)

@@ -1,11 +1,6 @@
 from __future__ import annotations
 
-import logging
-
-import numpy as np
 from django.contrib.contenttypes.models import ContentType
-from django.db.models.signals import post_delete, post_save
-from django.dispatch import receiver
 
 from .models import Vector
 

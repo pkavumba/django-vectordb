@@ -1,4 +1,8 @@
+from __future__ import annotations
+
 # Inspired by rest framework
+import os
+
 from django.conf import settings
 from django.core.signals import setting_changed
 from django.utils.module_loading import import_string
@@ -11,6 +15,7 @@ DEFAULTS = {
     "DEFAULT_MAX_N_RESULTS": 10,
     "DEFAULT_MIN_SCORE": 0.0,
     "DEFAULT_MAX_BRUTEFORCE_N": 10_000,
+    "DEFAULT_PERSISTENT_DIRECTORY": os.path.join(settings.BASE_DIR, ".vectordb"),
 }
 
 
@@ -93,8 +98,8 @@ class VectorDBSettings:
         for setting in REMOVED_SETTINGS:
             if setting in user_settings:
                 raise RuntimeError(
-                    "The '%s' setting has been removed. Please refer to '%s' for available settings."
-                    % (setting, "https://github/pkavumba/vectordb")
+                    "The '%s' setting has been removed. Please refer to '%s' for available settings."  # noqa E501
+                    % (setting, "https://github.com/pkavumba/django-vectordb")
                 )
         return user_settings
 

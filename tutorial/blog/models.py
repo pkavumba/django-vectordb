@@ -17,8 +17,11 @@ class Post(models.Model):
         return {
             "user_id": self.user.id,
             "username": self.user.username,
-            "created_at_year": self.created_at.year,
-            "created_at_month": self.created_at.month,
+            "created_at": {
+                "year": self.created_at.year,
+                "month": self.created_at.month,
+                "day": self.created_at.day,
+            },
         }
 
     def __str__(self):

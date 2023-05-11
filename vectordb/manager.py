@@ -4,11 +4,11 @@ import logging
 import os
 import time
 
-from django.conf import settings
 from django.db import models
 
 from .ann.indexes import HNSWIndex
 from .queryset import VectorQuerySet
+from .settings import vectordb_settings
 from .utils import (
     create_vector_from_instance,
     create_vector_from_text,
@@ -20,35 +20,26 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("VectorDB")
 
 
-EMBEDDING_FN = getattr(settings, "EMBEDDING_FN", None)
-EMBEDDING_DIM = getattr(settings, "EMBEDDING_DIM", None)
-
-if EMBEDDING_FN is not None and EMBEDDING_DIM is None:
-    raise ValueError("EMBEDDING_FN is set but EMBEDDING_DIM is not set")
-
-PERSISTENT_PATH = getattr(
-    settings,
-    "PERSISTENT_PATH",
-    os.path.join(settings.BASE_DIR, ".vectordb", "hnsw_index.bin"),
-)
-
-if not os.path.exists(os.path.dirname(PERSISTENT_PATH)):
-    os.makedirs(os.path.dirname(PERSISTENT_PATH))
+if not os.path.exists(os.path.dirname(vectordb_settings.DEFAULT_PERSISTENT_DIRECTORY)):
+    os.makedirs(os.path.dirname(vectordb_settings.DEFAULT_PERSISTENT_DIRECTORY))
 
 
 class VectorManager(models.Manager):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.index = None
-        self.persistent_path = PERSISTENT_PATH
+        self.persistent_path = os.path.join(
+            vectordb_settings.DEFAULT_PERSISTENT_DIRECTORY, "vector.index"
+        )  # TODO: refactor coz this depends on internal knowledge of the index class
 
         logger.info(
-            "Loading the weights for the embedding model. This may take a few seconds the first time it runs because it downloads the wieghts and caches them."
+            "Loading the weights for the embedding model. This may take a few seconds the first"
+            " time it runs because it downloads the wieghts and caches them."
         )
         start = time.time()
 
         embedding_fn, embedding_dim = get_embedding_function()
-        self.embedding_dim = EMBEDDING_DIM or embedding_dim
+        self.embedding_dim = embedding_dim
         self.embedding_fn = embedding_fn
 
         if os.path.exists(self.persistent_path):

@@ -1,3 +1,3 @@
-from .abcz import AbstractIndex
-from .indexes import BFIndex, HSWNLibIndex
-from .singleton import SingletonABCMeta
+from .abcz import AbstractIndex  # noqa
+from .indexes import BFIndex, HSWNLibIndex  # noqa
+from .singleton import SingletonABCMeta  # noqa

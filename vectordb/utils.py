@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-import importlib
 import json
 import logging
-import os
 
 import numpy as np
 from django.conf import settings
@@ -15,7 +13,7 @@ from vectordb.settings import vectordb_settings
 from .validators import validate_vector_data
 
 try:
-    import celery
+    import celery  # noqa
 
     from . import tasks
 

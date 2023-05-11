@@ -26,3 +26,4 @@ Pipfile.lock
 .DS_Store
 deploy.sh
 deploy_docs.sh
+example

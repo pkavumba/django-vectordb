@@ -25,7 +25,8 @@ class SentenceTransformerEncoder:
     def __init__(self, model_name="all-MiniLM-L6-v2"):
         if SentenceTransformer is None:
             raise ImportError(
-                "SentenceTransformer is not installed. Please install sentence-transformers package. Or run `$ pip install sentence-transformers`"
+                "SentenceTransformer is not installed. Please install sentence-transformers package."  # noqa
+                " Or run `$ pip install sentence-transformers`"
             )
         if not hasattr(self, "model"):
             self.model = SentenceTransformer(model_name)
@@ -40,7 +41,7 @@ class OpenAIEmbeddings:
             raise ValueError("OPENAI_API_KEY is not set in Django settings.")
         if openai is None:
             raise ImportError(
-                "OpenAI API is not installed. Please install openai package. Or run `$ pip install openai`"
+                "OpenAI API is not installed. Please install openai package. Or run `$ pip install openai`"  # noqa
             )
         openai.api_key = settings.OPENAI_API_KEY
 

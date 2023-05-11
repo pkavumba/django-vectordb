@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-import abc
 import json
 import os
-from typing import Any
 
 import hnswlib
-import numpy as np
 
 from . import AbstractIndex
 
@@ -95,11 +92,11 @@ class BFIndex(HSWNLibIndex):
 
         filter_fn = None
         if ids_in is not None and ids_not_in is not None:
-            filter_fn = lambda x: x in ids_in and x not in ids_not_in
+            filter_fn = lambda x: x in ids_in and x not in ids_not_in  # noqa: E731
         elif ids_in is not None:
-            filter_fn = lambda x: x in ids_in
+            filter_fn = lambda x: x in ids_in  # noqa: E731
         elif ids_not_in is not None:
-            filter_fn = lambda x: x not in ids_not_in
+            filter_fn = lambda x: x not in ids_not_in  # noqa: E731
 
         if ef is not None:
             if type(self.index) == hnswlib.Index:
@@ -159,11 +156,11 @@ class HNSWIndex(HSWNLibIndex):
 
         filter_fn = None
         if ids_in is not None and ids_not_in is not None:
-            filter_fn = lambda x: x in ids_in and x not in ids_not_in
+            filter_fn = lambda x: x in ids_in and x not in ids_not_in  # noqa: E731
         elif ids_in is not None:
-            filter_fn = lambda x: x in ids_in
+            filter_fn = lambda x: x in ids_in  # noqa: E731
         elif ids_not_in is not None:
-            filter_fn = lambda x: x not in ids_not_in
+            filter_fn = lambda x: x not in ids_not_in  # noqa: E731
 
         if ef is not None:
             if type(self.index) == hnswlib.Index:
@@ -172,7 +169,6 @@ class HNSWIndex(HSWNLibIndex):
                 ValueError("ef can only be set for HNSW Index")
 
         if filter_fn is not None:
-            #
             return self.index.knn_query(query, k, filter=filter_fn, num_threads=1)
 
         return self.index.knn_query(query, k, num_threads=-1)

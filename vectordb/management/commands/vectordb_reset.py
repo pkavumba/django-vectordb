@@ -1,5 +1,4 @@
-from django.apps import apps
-from django.contrib.contenttypes.models import ContentType
+from django.apps import apps  # noqa F401
 from django.core.management.base import BaseCommand
 
 from vectordb.models import Vector

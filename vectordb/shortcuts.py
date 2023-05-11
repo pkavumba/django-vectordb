@@ -15,7 +15,8 @@ def autosync_model_to_vectordb(model_class):
 
     # Check if the model class is already registered
     if model_key not in registered_models:
-        # Connect the handler functions to the signals for the model class with the model key as the dispatch uid
+        # Connect the handler functions to the signals for the model class
+        #  with the model key as the dispatch uid
         post_save.connect(
             sync_vectordb_on_create_update, sender=model_class, dispatch_uid=model_key
         )

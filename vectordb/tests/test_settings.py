@@ -1,7 +1,6 @@
 import os
 
 import pytest
-from django.core.exceptions import ImproperlyConfigured
 from django.test import override_settings
 
 from vectordb.settings import VectorDBSettings, import_from_string, perform_import
