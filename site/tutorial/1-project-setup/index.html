@@ -330,6 +330,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#urls" class="md-nav__link">
+    URLs
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#summary" class="md-nav__link">
     Summary
   </a>
@@ -490,6 +497,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#urls" class="md-nav__link">
+    URLs
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#summary" class="md-nav__link">
     Summary
   </a>
@@ -514,196 +528,357 @@
   
 
 
-<h1 id="tutorial-1-project-setup"><a class="toclink" href="#tutorial-1-project-setup">Tutorial 1: Project Setup</a></h1>
-<p>We're going to create a blogging site then add vector search to it through <code>django-vectordb</code>. We will</p>
-<h2 id="project-setup"><a class="toclink" href="#project-setup">Project setup</a></h2>
+<h1 id="tutorial-1-project-setup">Tutorial 1: Project Setup</h1>
+<p>Welcome to this tutorial on <code>django-vectordb</code>! Our goal is to learn how to use <code>vectordb</code>. To make it more relatable, we'll demonstrate the features of <code>django-vectordb</code> by building a basic blogging site.</p>
+<p>In this first lesson, we'll lay the groundwork for our blogging site by creating a model to store blog posts and developing basic views for creating, viewing, and examining the details of each post. This is the most work we have to do. Integrating <code>django-vectordb</code> is very easy and straight forward.</p>
+<p>As we delve deeper, we will explore the capabilities of <code>django-vectordb</code> by integrating related blog suggestions on the details page, based on vector similarity searches. This will showcase the flexibility and easy of use and power of <code>django-vectordb</code>.</p>
+<p>In the later stages of our tutorial, we will add a search page to demonstrate the text search features. Finally, we'll configure a REST API endpoint that allows for efficient AJAX searching and remote hosting of vectordb.</p>
+<p>Now, with the introduction out of the way, let's get coding started!</p>
+<h2 id="project-setup">Project setup</h2>
 <p>Create a new Django project named <code>tutorial</code>, then start a new app called <code>blog</code>.</p>
-<pre><code class="language-bash">    # Create a virtual environment to isolate our package dependencies locally
-    python3 -m venv env
-    source env/bin/activate  # On Windows use `env\Scripts\activate`
-
-    # Install Django and VectorDB into the virtual environment
-    pip install django
-    pip install django-vectordb[standard] # include optional dependencies
-
-    # Set up a new project with a single application
-    django-admin startproject tutorial
-    cd tutorial
-    django-admin startapp blog
-    cd ..
-</code></pre>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Create a virtual environment to isolate our package dependencies locally</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>env
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nb">source</span><span class="w"> </span>env/bin/activate<span class="w">  </span><span class="c1"># On Windows use `env\Scripts\activate`</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1"># Install Django and VectorDB into the virtual environment</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>pip<span class="w"> </span>install<span class="w"> </span>django
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>pip<span class="w"> </span>install<span class="w"> </span>django-vectordb<span class="o">[</span>standard<span class="o">]</span><span class="w"> </span><span class="c1"># include optional dependencies</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="c1"># Set up a new project with a single application</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>django-admin<span class="w"> </span>startproject<span class="w"> </span>tutorial
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="nb">cd</span><span class="w"> </span>tutorial
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>django-admin<span class="w"> </span>startapp<span class="w"> </span>blog
+</span></code></pre></div>
 <p>The project layout should look like:</p>
-<pre><code class="language-bash">    tutorial
-    ├── blog
-    │   ├── __init__.py
-    │   ├── admin.py
-    │   ├── apps.py
-    │   ├── migrations
-    │   │   └── __init__.py
-    │   ├── models.py
-    │   ├── tests.py
-    │   └── views.py
-    ├── manage.py
-    └── tutorial
-        ├── __init__.py
-        ├── asgi.py
-        ├── settings.py
-        ├── urls.py
-        └── wsgi.py
-</code></pre>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="w">    </span>tutorial
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span>├──<span class="w"> </span>blog
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>__init__.py
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>admin.py
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>apps.py
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>migrations
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span>│<span class="w">   </span>│<span class="w">   </span>└──<span class="w"> </span>__init__.py
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>models.py
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>tests.py
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span>│<span class="w">   </span>└──<span class="w"> </span>views.py
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span>├──<span class="w"> </span>manage.py
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span>└──<span class="w"> </span>tutorial
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">        </span>├──<span class="w"> </span>__init__.py
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">        </span>├──<span class="w"> </span>asgi.py
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">        </span>├──<span class="w"> </span>settings.py
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">        </span>├──<span class="w"> </span>urls.py
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">        </span>└──<span class="w"> </span>wsgi.py
+</span></code></pre></div>
 <p>Now lets add blog to the <code>INSTALLED_APPS</code> in <code>tutorial/settings.py</code></p>
-<pre><code class="language-python">    # settings.py
-    INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    &quot;blog&quot;, # add blog to here
-    ]
-</code></pre>
+<div class="language-python highlight"><span class="filename">tutorial/settings.py</span><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># settings.py</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="s2">&quot;django.contrib.admin&quot;</span><span class="p">,</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="s2">&quot;django.contrib.auth&quot;</span><span class="p">,</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="s2">&quot;django.contrib.contenttypes&quot;</span><span class="p">,</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="s2">&quot;django.contrib.sessions&quot;</span><span class="p">,</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="s2">&quot;django.contrib.messages&quot;</span><span class="p">,</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="s2">&quot;django.contrib.staticfiles&quot;</span><span class="p">,</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="hll">    <span class="s2">&quot;blog&quot;</span><span class="p">,</span> <span class="c1"># &lt;--</span>
+</span></span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="p">]</span>
+</span></code></pre></div>
 <p>Next lets add a <code>POST</code> model to blog app <code>blog/models.py</code> for saving our posts</p>
-<pre><code class="language-python">    # blog/models.py
-    from django.db import models
-    from django.contrib.auth import get_user_model
-
-    User = get_user_model()
-
-
-    class Post(models.Model):
-        title = models.CharField(max_length=100)
-        description = models.TextField()
-        user = models.ForeignKey(User, on_delete=models.CASCADE)
-        created_at = models.DateTimeField(auto_now_add=True)
-
-        def __str__(self):
-            return self.title
-</code></pre>
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/models.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-3-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-3-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-3-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-3-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-3-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-3-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-3-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-3-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-3-10">10</a></span>
+<span class="normal"><a href="#__codelineno-3-11">11</a></span>
+<span class="normal"><a href="#__codelineno-3-12">12</a></span>
+<span class="normal"><a href="#__codelineno-3-13">13</a></span>
+<span class="normal"><a href="#__codelineno-3-14">14</a></span>
+<span class="normal"><a href="#__codelineno-3-15">15</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="c1"># blog/models.py</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="kn">from</span> <span class="nn">django.contrib.auth</span> <span class="kn">import</span> <span class="n">get_user_model</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4"></a>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="n">User</span> <span class="o">=</span> <span class="n">get_user_model</span><span class="p">()</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6"></a>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7"></a>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8"></a><span class="k">class</span> <span class="nc">Post</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9"></a>    <span class="n">title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10"></a>    <span class="n">description</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">()</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11"></a>    <span class="n">user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12"></a>    <span class="n">created_at</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13"></a>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14"></a>    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span>
+</span></code></pre></div></td></tr></table></div>
 <p>Our model has three fields, the <code>title</code>, <code>description</code>, <code>created_at</code>, and a <code>user</code> foreign key.</p>
 <p>Now sync your database for the first time:</p>
-<pre><code class="language-bash">    python manage.py makemigrations # create migrations for blog
-    python manage.py migrate
-</code></pre>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>python<span class="w"> </span>manage.py<span class="w"> </span>makemigrations<span class="w"> </span><span class="c1"># create migrations for blog</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>python<span class="w"> </span>manage.py<span class="w"> </span>migrate
+</span></code></pre></div>
 <p>We'll also create an initial user named <code>admin</code> with a password. We'll authenticate as that user later in our example.</p>
-<pre><code class="language-bash">    python manage.py createsuperuser --username admin --email admin@example.com
-</code></pre>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>python<span class="w"> </span>manage.py<span class="w"> </span>createsuperuser<span class="w"> </span>--username<span class="w"> </span>admin<span class="w"> </span>--email<span class="w"> </span>admin@example.com
+</span></code></pre></div>
 <p>Once you've set up a database and the initial user is created and ready to go.</p>
 <p>Run the development server now</p>
-<pre><code class="language-bash">    ./manage.py runserver
-</code></pre>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>./manage.py<span class="w"> </span>runserver
+</span></code></pre></div>
 <hr />
-<h2 id="adding-sample-blogs"><a class="toclink" href="#adding-sample-blogs">Adding Sample Blogs</a></h2>
+<h2 id="adding-sample-blogs">Adding Sample Blogs</h2>
 <p>Lets add the Post model to the admins panel. Edit the <code>blog/admin.py</code></p>
-<pre><code class="language-python">    # blog/admin.py
-    from django.contrib import admin
-    from .models import Post
-
-    admin.site.register(Post)
-</code></pre>
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/admin.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span>
+<span class="normal"><a href="#__codelineno-7-2">2</a></span>
+<span class="normal"><a href="#__codelineno-7-3">3</a></span>
+<span class="normal"><a href="#__codelineno-7-4">4</a></span>
+<span class="normal"><a href="#__codelineno-7-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="c1"># blog/admin.py</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2"></a><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3"></a><span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Post</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4"></a>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5"></a><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Post</span><span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
 <p>Now we can visit <code>http://127.0.0.1:8000/admin/blog/post/</code> and add a few Posts. Go ahead and add something</p>
-<h2 id="forms"><a class="toclink" href="#forms">Forms</a></h2>
+<h2 id="forms">Forms</h2>
 <p>In the last section we used the admin panel to add some post. Now lets add a form for post to the blogs.</p>
 <p>Create a new file in blog directory called <code>forms.py</code></p>
-<pre><code class="language-python">    # blog/forms.py
-    from django import forms
-    from .models import Post
-
-
-    class PostForm(forms.ModelForm):
-        class Meta:
-            model = Post
-            fields = [&quot;title&quot;, &quot;description&quot;]
-</code></pre>
-<h2 id="views"><a class="toclink" href="#views">Views</a></h2>
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/forms.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1">1</a></span>
+<span class="normal"><a href="#__codelineno-8-2">2</a></span>
+<span class="normal"><a href="#__codelineno-8-3">3</a></span>
+<span class="normal"><a href="#__codelineno-8-4">4</a></span>
+<span class="normal"><a href="#__codelineno-8-5">5</a></span>
+<span class="normal"><a href="#__codelineno-8-6">6</a></span>
+<span class="normal"><a href="#__codelineno-8-7">7</a></span>
+<span class="normal"><a href="#__codelineno-8-8">8</a></span>
+<span class="normal"><a href="#__codelineno-8-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="c1"># blog/forms.py</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2"></a><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3"></a><span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Post</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4"></a>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5"></a>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6"></a><span class="k">class</span> <span class="nc">PostForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7"></a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8"></a>        <span class="n">model</span> <span class="o">=</span> <span class="n">Post</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9"></a>        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">]</span>
+</span></code></pre></div></td></tr></table></div>
+<h2 id="views">Views</h2>
 <p>Lets add some views for viewing our blog posts. We will keep things simple and use function based views.</p>
 <p>First create a directory called <code>templates</code> withing the blog app. Inside the <code>templates</code> directory create another folder called <code>blog</code>.</p>
 <p>Lets add a basic <code>base.html</code></p>
-<pre><code class="language-html">&lt;!--blog/templates/blog/base.html--&gt;
-{% load static %}
-&lt;!DOCTYPE html&gt;
-&lt;html lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;
-  &lt;head&gt;
-    &lt;meta charset=&quot;utf-8&quot; /&gt;
-    &lt;title&gt;Django Vector Database&lt;/title&gt;
-  &lt;/head&gt;
-  &lt;body&gt;
-    &lt;div class=&quot;container&quot;&gt;{% block content %} {% endblock %}&lt;/div&gt;
-  &lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/templates/blog/base.html</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-9-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-9-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-9-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-9-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-9-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-9-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-9-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-9-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-9-10">10</a></span>
+<span class="normal"><a href="#__codelineno-9-11">11</a></span>
+<span class="normal"><a href="#__codelineno-9-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="o">&lt;</span><span class="err">!</span><span class="o">--</span><span class="n">blog</span><span class="o">/</span><span class="n">templates</span><span class="o">/</span><span class="n">blog</span><span class="o">/</span><span class="n">base</span><span class="o">.</span><span class="n">html</span><span class="o">--&gt;</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2"></a><span class="p">{</span><span class="o">%</span> <span class="n">load</span> <span class="n">static</span> <span class="o">%</span><span class="p">}</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3"></a><span class="o">&lt;</span><span class="err">!</span><span class="n">DOCTYPE</span> <span class="n">html</span><span class="o">&gt;</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4"></a><span class="o">&lt;</span><span class="n">html</span> <span class="n">lang</span><span class="o">=</span><span class="s2">&quot;en&quot;</span> <span class="nb">dir</span><span class="o">=</span><span class="s2">&quot;ltr&quot;</span><span class="o">&gt;</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5"></a>  <span class="o">&lt;</span><span class="n">head</span><span class="o">&gt;</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6"></a>    <span class="o">&lt;</span><span class="n">meta</span> <span class="n">charset</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span> <span class="o">/&gt;</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7"></a>    <span class="o">&lt;</span><span class="n">title</span><span class="o">&gt;</span><span class="n">Django</span> <span class="n">Vector</span> <span class="n">Database</span><span class="o">&lt;/</span><span class="n">title</span><span class="o">&gt;</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8"></a>  <span class="o">&lt;/</span><span class="n">head</span><span class="o">&gt;</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9"></a>  <span class="o">&lt;</span><span class="n">body</span><span class="o">&gt;</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10"></a>    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;container&quot;</span><span class="o">&gt;</span><span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">content</span> <span class="o">%</span><span class="p">}</span> <span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span><span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11"></a>  <span class="o">&lt;/</span><span class="n">body</span><span class="o">&gt;</span>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12"></a><span class="o">&lt;/</span><span class="n">html</span><span class="o">&gt;</span>
+</span></code></pre></div></td></tr></table></div>
 <p>Now lets create the list, detail, create view.</p>
-<pre><code class="language-python">    from django.shortcuts import render
-
-    from django.contrib.auth.decorators import login_required
-    from django.shortcuts import render, redirect, get_object_or_404
-
-    from .models import Post
-    from .forms import PostForm
-
-
-    def post_list(request):
-        posts = Post.objects.all().order_by(&quot;-created_at&quot;)
-        return render(request, &quot;blog/post_list.html&quot;, {&quot;posts&quot;: posts})
-
-
-    def post_detail(request, pk):
-        post = get_object_or_404(Post, pk=pk)
-        return render(request, &quot;blog/post_detail.html&quot;, {&quot;post&quot;: post})
-
-
-    @login_required
-    def post_create(request):
-        if request.method == &quot;POST&quot;:
-            form = PostForm(request.POST)
-            if form.is_valid():
-                post = form.save(commit=False)
-                post.user = request.user
-                post.save()
-                return redirect(&quot;post_list&quot;)
-        else:
-            form = PostForm()
-        return render(request, &quot;blog/post_create.html&quot;, {&quot;form&quot;: form})
-</code></pre>
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/views.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-10-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-10-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-10-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-10-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-10-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-10-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-10-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-10-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-10-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-10-10">10</a></span>
+<span class="normal"><a href="#__codelineno-10-11">11</a></span>
+<span class="normal"><a href="#__codelineno-10-12">12</a></span>
+<span class="normal"><a href="#__codelineno-10-13">13</a></span>
+<span class="normal"><a href="#__codelineno-10-14">14</a></span>
+<span class="normal"><a href="#__codelineno-10-15">15</a></span>
+<span class="normal"><a href="#__codelineno-10-16">16</a></span>
+<span class="normal"><a href="#__codelineno-10-17">17</a></span>
+<span class="normal"><a href="#__codelineno-10-18">18</a></span>
+<span class="normal"><a href="#__codelineno-10-19">19</a></span>
+<span class="normal"><a href="#__codelineno-10-20">20</a></span>
+<span class="normal"><a href="#__codelineno-10-21">21</a></span>
+<span class="normal"><a href="#__codelineno-10-22">22</a></span>
+<span class="normal"><a href="#__codelineno-10-23">23</a></span>
+<span class="normal"><a href="#__codelineno-10-24">24</a></span>
+<span class="normal"><a href="#__codelineno-10-25">25</a></span>
+<span class="normal"><a href="#__codelineno-10-26">26</a></span>
+<span class="normal"><a href="#__codelineno-10-27">27</a></span>
+<span class="normal"><a href="#__codelineno-10-28">28</a></span>
+<span class="normal"><a href="#__codelineno-10-29">29</a></span>
+<span class="normal"><a href="#__codelineno-10-30">30</a></span>
+<span class="normal"><a href="#__codelineno-10-31">31</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1"></a><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3"></a><span class="kn">from</span> <span class="nn">django.contrib.auth.decorators</span> <span class="kn">import</span> <span class="n">login_required</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4"></a><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">get_object_or_404</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5"></a>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6"></a><span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Post</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7"></a><span class="kn">from</span> <span class="nn">.forms</span> <span class="kn">import</span> <span class="n">PostForm</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8"></a>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9"></a>
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10"></a><span class="k">def</span> <span class="nf">post_list</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11"></a>    <span class="n">posts</span> <span class="o">=</span> <span class="n">Post</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-created_at&quot;</span><span class="p">)</span>
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12"></a>    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;blog/post_list.html&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;posts&quot;</span><span class="p">:</span> <span class="n">posts</span><span class="p">})</span>
+</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13"></a>
+</span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14"></a>
+</span><span id="__span-10-15"><a id="__codelineno-10-15" name="__codelineno-10-15"></a><span class="k">def</span> <span class="nf">post_detail</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+</span><span id="__span-10-16"><a id="__codelineno-10-16" name="__codelineno-10-16"></a>    <span class="n">post</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Post</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span>
+</span><span id="__span-10-17"><a id="__codelineno-10-17" name="__codelineno-10-17"></a>    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;blog/post_detail.html&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;post&quot;</span><span class="p">:</span> <span class="n">post</span><span class="p">})</span>
+</span><span id="__span-10-18"><a id="__codelineno-10-18" name="__codelineno-10-18"></a>
+</span><span id="__span-10-19"><a id="__codelineno-10-19" name="__codelineno-10-19"></a>
+</span><span id="__span-10-20"><a id="__codelineno-10-20" name="__codelineno-10-20"></a><span class="nd">@login_required</span>
+</span><span id="__span-10-21"><a id="__codelineno-10-21" name="__codelineno-10-21"></a><span class="k">def</span> <span class="nf">post_create</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+</span><span id="__span-10-22"><a id="__codelineno-10-22" name="__codelineno-10-22"></a>    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
+</span><span id="__span-10-23"><a id="__codelineno-10-23" name="__codelineno-10-23"></a>        <span class="n">form</span> <span class="o">=</span> <span class="n">PostForm</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">)</span>
+</span><span id="__span-10-24"><a id="__codelineno-10-24" name="__codelineno-10-24"></a>        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+</span><span id="__span-10-25"><a id="__codelineno-10-25" name="__codelineno-10-25"></a>            <span class="n">post</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span id="__span-10-26"><a id="__codelineno-10-26" name="__codelineno-10-26"></a>            <span class="n">post</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>
+</span><span id="__span-10-27"><a id="__codelineno-10-27" name="__codelineno-10-27"></a>            <span class="n">post</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</span><span id="__span-10-28"><a id="__codelineno-10-28" name="__codelineno-10-28"></a>            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;post_list&quot;</span><span class="p">)</span>
+</span><span id="__span-10-29"><a id="__codelineno-10-29" name="__codelineno-10-29"></a>    <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-10-30"><a id="__codelineno-10-30" name="__codelineno-10-30"></a>        <span class="n">form</span> <span class="o">=</span> <span class="n">PostForm</span><span class="p">()</span>
+</span><span id="__span-10-31"><a id="__codelineno-10-31" name="__codelineno-10-31"></a>    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;blog/post_create.html&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;form&quot;</span><span class="p">:</span> <span class="n">form</span><span class="p">})</span>
+</span></code></pre></div></td></tr></table></div>
 <p>And finally, lets add the templates for these views.</p>
 <p>We will begin with a template that displays a list of blog posts with their titles as clickable links. The template extends the "blog/base.html" template. In case there are no posts, it displays the message "No posts available." At the end, we add a link to create a new blog post using the "post_create" URL pattern.</p>
-<pre><code class="language-html">&lt;!-- blog/templates/blog/post_list.html --&gt;
-{% extends &quot;blog/base.html&quot; %} {% block content %}
-&lt;h1&gt;Blog Posts&lt;/h1&gt;
-&lt;ul&gt;
-  {% for post in posts %}
-  &lt;li&gt;
-    &lt;a href=&quot;{% url 'post_detail' post.pk %}&quot;&gt;{{ post.title }}&lt;/a&gt;
-  &lt;/li&gt;
-  {% empty %}
-  &lt;li&gt;No posts available.&lt;/li&gt;
-  {% endfor %}
-&lt;/ul&gt;
-&lt;a href=&quot;{% url 'post_create' %}&quot;&gt;Add New Post&lt;/a&gt;
-{% endblock %}
-</code></pre>
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/templates/blog/post_list.html</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-11-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-11-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-11-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-11-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-11-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-11-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-11-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-11-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-11-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-11-10">10</a></span>
+<span class="normal"><a href="#__codelineno-11-11">11</a></span>
+<span class="normal"><a href="#__codelineno-11-12">12</a></span>
+<span class="normal"><a href="#__codelineno-11-13">13</a></span>
+<span class="normal"><a href="#__codelineno-11-14">14</a></span>
+<span class="normal"><a href="#__codelineno-11-15">15</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1"></a><span class="o">&lt;</span><span class="err">!</span><span class="o">--</span> <span class="n">blog</span><span class="o">/</span><span class="n">templates</span><span class="o">/</span><span class="n">blog</span><span class="o">/</span><span class="n">post_list</span><span class="o">.</span><span class="n">html</span> <span class="o">--&gt;</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2"></a><span class="p">{</span><span class="o">%</span> <span class="n">extends</span> <span class="s2">&quot;blog/base.html&quot;</span> <span class="o">%</span><span class="p">}</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3"></a><span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">content</span> <span class="o">%</span><span class="p">}</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4"></a><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">Blog</span> <span class="n">Posts</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5"></a><span class="o">&lt;</span><span class="n">ul</span><span class="o">&gt;</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6"></a>  <span class="p">{</span><span class="o">%</span> <span class="k">for</span> <span class="n">post</span> <span class="ow">in</span> <span class="n">posts</span> <span class="o">%</span><span class="p">}</span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7"></a>  <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8"></a>    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;{</span><span class="si">% u</span><span class="s2">rl &#39;post_detail&#39; post.pk %}&quot;</span><span class="o">&gt;</span><span class="p">{{</span> <span class="n">post</span><span class="o">.</span><span class="n">title</span> <span class="p">}}</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9"></a>  <span class="o">&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10"></a>  <span class="p">{</span><span class="o">%</span> <span class="n">empty</span> <span class="o">%</span><span class="p">}</span>
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11"></a>  <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span><span class="n">No</span> <span class="n">posts</span> <span class="n">available</span><span class="o">.&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12"></a>  <span class="p">{</span><span class="o">%</span> <span class="n">endfor</span> <span class="o">%</span><span class="p">}</span>
+</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13"></a><span class="o">&lt;/</span><span class="n">ul</span><span class="o">&gt;</span>
+</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14"></a><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;{</span><span class="si">% u</span><span class="s2">rl &#39;post_create&#39; %}&quot;</span><span class="o">&gt;</span><span class="n">Add</span> <span class="n">New</span> <span class="n">Post</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15"></a><span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
 <p>Next we add the template "post_detail.html" responsible for displaying the details of a single blog post.
 The template also includes a link to navigate back to the list of all blog posts.</p>
-<pre><code class="language-html">&lt;!-- blog/templates/blog/post_detail.html --&gt;
-{% extends &quot;blog/base.html&quot; %} {% block content %}
-&lt;h1&gt;{{ post.title }}&lt;/h1&gt;
-&lt;p&gt;{{ post.description }}&lt;/p&gt;
-&lt;a href=&quot;{% url 'post_list' %}&quot;&gt;Back to Posts List&lt;/a&gt;
-{% endblock %}
-</code></pre>
-<pre><code class="language-html">&lt;!-- blog/templates/blog/post_create.html --&gt;
-{% extends &quot;blog/base.html&quot; %} {% block content %}
-&lt;h1&gt;Create New Post&lt;/h1&gt;
-&lt;form method=&quot;post&quot;&gt;
-  {% csrf_token %} {{ form.as_p }}
-  &lt;button type=&quot;submit&quot;&gt;Save Post&lt;/button&gt;
-&lt;/form&gt;
-&lt;a href=&quot;{% url 'post_list' %}&quot;&gt;Back to Posts List&lt;/a&gt;
-{% endblock %}
-</code></pre>
-<p>This completes boilerplate we need in order to test django vector database.</p>
-<h2 id="summary"><a class="toclink" href="#summary">Summary</a></h2>
-<p>In this tutorial we create a basic project to work with Django Vector Database. We have create all the views and forms we need to create and view posts. Next lets integrated django vector database</p>
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/templates/blog/post_detail.html</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-12-1">1</a></span>
+<span class="normal"><a href="#__codelineno-12-2">2</a></span>
+<span class="normal"><a href="#__codelineno-12-3">3</a></span>
+<span class="normal"><a href="#__codelineno-12-4">4</a></span>
+<span class="normal"><a href="#__codelineno-12-5">5</a></span>
+<span class="normal"><a href="#__codelineno-12-6">6</a></span>
+<span class="normal"><a href="#__codelineno-12-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1"></a><span class="o">&lt;</span><span class="err">!</span><span class="o">--</span> <span class="n">blog</span><span class="o">/</span><span class="n">templates</span><span class="o">/</span><span class="n">blog</span><span class="o">/</span><span class="n">post_detail</span><span class="o">.</span><span class="n">html</span> <span class="o">--&gt;</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2"></a><span class="p">{</span><span class="o">%</span> <span class="n">extends</span> <span class="s2">&quot;blog/base.html&quot;</span> <span class="o">%</span><span class="p">}</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3"></a><span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">content</span> <span class="o">%</span><span class="p">}</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4"></a><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="p">{{</span> <span class="n">post</span><span class="o">.</span><span class="n">title</span> <span class="p">}}</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5"></a><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">{{</span> <span class="n">post</span><span class="o">.</span><span class="n">description</span> <span class="p">}}</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6"></a><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;{</span><span class="si">% u</span><span class="s2">rl &#39;post_list&#39; %}&quot;</span><span class="o">&gt;</span><span class="n">Back</span> <span class="n">to</span> <span class="n">Posts</span> <span class="n">List</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7"></a><span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/templates/blog/post_create.html</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-13-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-13-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-13-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-13-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-13-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-13-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-13-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-13-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-13-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-13-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1"></a><span class="o">&lt;</span><span class="err">!</span><span class="o">--</span> <span class="n">blog</span><span class="o">/</span><span class="n">templates</span><span class="o">/</span><span class="n">blog</span><span class="o">/</span><span class="n">post_create</span><span class="o">.</span><span class="n">html</span> <span class="o">--&gt;</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2"></a><span class="p">{</span><span class="o">%</span> <span class="n">extends</span> <span class="s2">&quot;blog/base.html&quot;</span> <span class="o">%</span><span class="p">}</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3"></a><span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">content</span> <span class="o">%</span><span class="p">}</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4"></a><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">Create</span> <span class="n">New</span> <span class="n">Post</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5"></a><span class="o">&lt;</span><span class="n">form</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;post&quot;</span><span class="o">&gt;</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6"></a>  <span class="p">{</span><span class="o">%</span> <span class="n">csrf_token</span> <span class="o">%</span><span class="p">}</span> <span class="p">{{</span> <span class="n">form</span><span class="o">.</span><span class="n">as_p</span> <span class="p">}}</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7"></a>  <span class="o">&lt;</span><span class="n">button</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;submit&quot;</span><span class="o">&gt;</span><span class="n">Save</span> <span class="n">Post</span><span class="o">&lt;/</span><span class="n">button</span><span class="o">&gt;</span>
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8"></a><span class="o">&lt;/</span><span class="n">form</span><span class="o">&gt;</span>
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9"></a><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;{</span><span class="si">% u</span><span class="s2">rl &#39;post_list&#39; %}&quot;</span><span class="o">&gt;</span><span class="n">Back</span> <span class="n">to</span> <span class="n">Posts</span> <span class="n">List</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10"></a><span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<p>That covers the basic functionality we want to work with. However, there's still one more aspect to address. We need to ensure that users are associated with their respective blogs, which means providing a way for them to log in to the app for the post functionality to work correctly. As evident from the code, posting requires user authentication.</p>
+<p>So lets create a quick login form in <code>blog/templates/blog/login.html</code></p>
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/templates/blog/login.html</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-14-1">1</a></span>
+<span class="normal"><a href="#__codelineno-14-2">2</a></span>
+<span class="normal"><a href="#__codelineno-14-3">3</a></span>
+<span class="normal"><a href="#__codelineno-14-4">4</a></span>
+<span class="normal"><a href="#__codelineno-14-5">5</a></span>
+<span class="normal"><a href="#__codelineno-14-6">6</a></span>
+<span class="normal"><a href="#__codelineno-14-7">7</a></span>
+<span class="normal"><a href="#__codelineno-14-8">8</a></span>
+<span class="normal"><a href="#__codelineno-14-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1"></a><span class="o">&lt;</span><span class="err">!</span><span class="o">--</span> <span class="n">blog</span><span class="o">/</span><span class="n">templates</span><span class="o">/</span><span class="n">blog</span><span class="o">/</span><span class="n">login</span><span class="o">.</span><span class="n">html</span> <span class="o">--&gt;</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2"></a><span class="p">{</span><span class="o">%</span> <span class="n">extends</span> <span class="s1">&#39;blog/base.html&#39;</span> <span class="o">%</span><span class="p">}</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3"></a><span class="p">{</span><span class="o">%</span> <span class="n">block</span> <span class="n">content</span> <span class="o">%</span><span class="p">}</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4"></a><span class="o">&lt;</span><span class="n">h2</span><span class="o">&gt;</span><span class="n">Login</span><span class="o">&lt;/</span><span class="n">h2</span><span class="o">&gt;</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5"></a><span class="o">&lt;</span><span class="n">form</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;post&quot;</span><span class="o">&gt;</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6"></a>  <span class="p">{</span><span class="o">%</span> <span class="n">csrf_token</span> <span class="o">%</span><span class="p">}</span> <span class="p">{{</span> <span class="n">form</span><span class="o">.</span><span class="n">as_p</span> <span class="p">}}</span>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7"></a>  <span class="o">&lt;</span><span class="n">button</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;submit&quot;</span><span class="o">&gt;</span><span class="n">Login</span><span class="o">&lt;/</span><span class="n">button</span><span class="o">&gt;</span>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8"></a><span class="o">&lt;/</span><span class="n">form</span><span class="o">&gt;</span>
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9"></a><span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h2 id="urls">URLs</h2>
+<p>Lets now add the urls for our views. Create a new file called <code>urls.py</code> in the blog app.</p>
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/urls.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-15-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-15-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-15-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-15-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-15-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-15-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-15-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-15-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-15-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-15-10">10</a></span>
+<span class="normal"><a href="#__codelineno-15-11">11</a></span>
+<span class="normal"><a href="#__codelineno-15-12">12</a></span>
+<span class="normal"><a href="#__codelineno-15-13">13</a></span>
+<span class="normal"><a href="#__codelineno-15-14">14</a></span>
+<span class="normal"><a href="#__codelineno-15-15">15</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1"></a><span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2"></a><span class="c1"># import login view</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3"></a><span class="kn">from</span> <span class="nn">django.contrib.auth.views</span> <span class="kn">import</span> <span class="n">LoginView</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4"></a><span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">views</span>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5"></a>
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6"></a><span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7"></a>    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">post_list</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;post_list&quot;</span><span class="p">),</span>
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8"></a>    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;blogs/&lt;int:pk&gt;/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">post_detail</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;post_detail&quot;</span><span class="p">),</span>
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9"></a>    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;blogs/create/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">post_create</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;post_create&quot;</span><span class="p">),</span>
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10"></a>    <span class="n">path</span><span class="p">(</span>
+</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11"></a>        <span class="s2">&quot;accounts/login/&quot;</span><span class="p">,</span>
+</span><span id="__span-15-12"><a id="__codelineno-15-12" name="__codelineno-15-12"></a>        <span class="n">LoginView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(</span><span class="n">template_name</span><span class="o">=</span><span class="s2">&quot;blog/login.html&quot;</span><span class="p">),</span> <span class="c1"># attach a template here</span>
+</span><span id="__span-15-13"><a id="__codelineno-15-13" name="__codelineno-15-13"></a>        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;login&quot;</span><span class="p">,</span>
+</span><span id="__span-15-14"><a id="__codelineno-15-14" name="__codelineno-15-14"></a>    <span class="p">),</span>
+</span><span id="__span-15-15"><a id="__codelineno-15-15" name="__codelineno-15-15"></a><span class="p">]</span>
+</span></code></pre></div></td></tr></table></div>
+<p>This wraps up the boilerplate necessary for testing the Django vector database. Now when we run the server</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>./manage.py<span class="w"> </span>runserver
+</span></code></pre></div>
+<p>When we visit [https://127.0.0.1/][app-index] we will see
+<img alt="app-index" src="../img/app-index.png" /></p>
+<p>And clicking the add button we will take us to
+<img alt="app-create" src="../img/app-create.png" /></p>
+<p>And we can view the details of the post by clicking the title.</p>
+<h2 id="summary">Summary</h2>
+<p>In this tutorial we create a basic project to work with Django Vector Database. We created all the basic views and forms we need to create and view posts. Next lets <a href="../2-adding-vector-search/">integrated django vector database</a></p>
 
 
 
@@ -741,7 +916,7 @@ The template also includes a link to navigate back to the list of all blog posts
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "content.code.select"], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.fac441b0.min.js"></script>

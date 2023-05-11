@@ -1,14 +1,14 @@
-# Django VectorDB
+# [Django VectorDB][docs]
 
 ---
 
 [![pypi-version]][pypi]
 
-**Adding extremely fast, low-latency, and scalable vector search to django apps.**
+**Adding extremely fast, low-latency, and scalable vector similarity search to django applications.**
 
 Full documentation for the project is available at [https://pkavumba.github.io/django-vectordb/][docs].
 
-Django Vector DB is a powerful and flexible toolkit for adding vector search capabilities to your Django applications. It is built on top of lightening fast nearest neighbor search library: hnswlib.
+[Django Vector Database][docs] is a powerful and flexible toolkit for adding vector similarity search capabilities to your Django applications. It is built on top of the lighteningly fast nearest neighbor search library: hnswlib.
 
 Some reasons you might want to use Django Vector DB:
 
@@ -190,7 +190,29 @@ The `text` and `id` are required. Additionally, the `id` must be unique, or an e
 
 ### Automatically Syncing Your Model to the vector database
 
-To enable auto sync, import the following signals and register them with your models:
+To enable auto sync, register the model to vectordb sync handlers in `apps.py`. The sync handlers are signals defined in `vectordb/sync_signals.py`.
+
+```python
+from django.apps import AppConfig
+
+
+class BlogConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "blog"
+
+    def ready(self):
+        from .models import Post
+        from vectordb.shortcuts import autosync_model_to_vectordb
+        autosync_model_to_vectordb(Post)
+```
+
+This will automatically sync the vectors when you create and delete instances.
+
+!!! note
+
+    Note that signals are not called in bulk create, so you will need to sync manually when using those methods.
+
+Alternatively, you can import the following signals and register them by yourself:
 
 ```python
 # signals.py
