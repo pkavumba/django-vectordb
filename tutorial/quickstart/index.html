@@ -596,10 +596,10 @@
   
 
 
-<h1 id="quickstart">Quickstart</h1>
+<h1 id="quickstart"><a class="toclink" href="#quickstart">Quickstart</a></h1>
 <p>We're going to create a blogging site then add vector search to it through <code>django-vectordb</code>.</p>
 <hr />
-<h2 id="project-setup">Project setup</h2>
+<h2 id="project-setup"><a class="toclink" href="#project-setup">Project setup</a></h2>
 <p>Create a new Django project named <code>tutorial</code>, then start a new app called <code>blog</code>.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Create a virtual environment to isolate our package dependencies locally</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>env
@@ -723,7 +723,7 @@
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>./manage.py<span class="w"> </span>runserver
 </span></code></pre></div>
 <hr />
-<h2 id="adding-sample-blogs">Adding Sample Blogs</h2>
+<h2 id="adding-sample-blogs"><a class="toclink" href="#adding-sample-blogs">Adding Sample Blogs</a></h2>
 <p>Lets add the Post model to the admins panel. Edit the <code>blog/admin.py</code></p>
 <div class="language-python highlight"><span class="filename">blog/admin.py</span><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># blog/admin.py</span>
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
@@ -733,7 +733,7 @@
 </span></code></pre></div>
 <p>Now we can visit <a href="http://127.0.0.1:8000/admin/blog/post/">http://127.0.0.1:8000/admin/blog/post/</a> and add a few Posts. Go ahead and add something</p>
 <hr />
-<h2 id="configuring-vector-search">Configuring Vector Search</h2>
+<h2 id="configuring-vector-search"><a class="toclink" href="#configuring-vector-search">Configuring Vector Search</a></h2>
 <p>First, let's synchronize all posts with the vector database. To do this, simply run the following command:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>python<span class="w"> </span>manage.py<span class="w"> </span>vectordb_sync<span class="w"> </span>&lt;app_name&gt;<span class="w"> </span>&lt;model_name&gt;
 </span></code></pre></div>
@@ -824,7 +824,7 @@
 </span></code></pre></div>
 <p>Visit <a href="http://127.0.0.1:8000/admin/blog/post/">http://127.0.0.1:8000/admin/blog/post/</a> and try adding a new post. You will notice that it automatically syncs with the vector database at <a href="http://127.0.0.1:8000/admin/vectordb/vector/">http://127.0.0.1:8000/admin/vectordb/vector/</a>. If you attempt to delete a post, it will also be automatically removed from the vector database. All of these features are provided out-of-the-box by <code>vectordb</code>, making the process seamless and efficient.</p>
 <hr />
-<h2 id="fast-vector-search">Fast Vector Search</h2>
+<h2 id="fast-vector-search"><a class="toclink" href="#fast-vector-search">Fast Vector Search</a></h2>
 <p>To perform a search, simply invoke the <code>vectordb.search()</code> method:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kn">from</span> <span class="nn">vectordb</span> <span class="kn">import</span> <span class="n">vectordb</span>
 </span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="n">results</span> <span class="o">=</span> <span class="n">vectordb</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;A Culinary Journey&quot;</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> <span class="c1"># k represents the maximum number of results desired.</span>
@@ -845,7 +845,7 @@
 <p>This is also a way to get related posts to <code>post1</code>. Thus, you can use <code>vectordb</code> for recommendations as well.</p>
 <p>Note: Seaching by model instances will automatically scope the results to instances of that type. For example, if you search by <code>post1</code> you will only get results that are instances of <code>Post</code>.</p>
 <hr />
-<h2 id="filtering">Filtering</h2>
+<h2 id="filtering"><a class="toclink" href="#filtering">Filtering</a></h2>
 <p>You can apply filters on <code>text</code> or <code>metadata</code> using the full capabilities of Django QuerySet filtering:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># Limit the search scope to a user with an id of 1</span>
 </span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="n">results</span> <span class="o">=</span> <span class="n">vectordb</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">metadata__user_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;A Culinary Journey&quot;</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
@@ -863,21 +863,21 @@
 </span></code></pre></div>
 <p>For more information on filtering, refer to the <a href="https://docs.djangoproject.com/en/4.2/topics/db/queries/">Django documentation</a> on querying the <code>JSONField</code>.</p>
 <hr />
-<h2 id="manually-adding-items-to-the-vector-database">Manually Adding Items to the Vector Database</h2>
+<h2 id="manually-adding-items-to-the-vector-database"><a class="toclink" href="#manually-adding-items-to-the-vector-database">Manually Adding Items to the Vector Database</a></h2>
 <p>VectorDB also provides a way to manually add items to it. This is useful if you want to add items to the database that are not in the database yet.</p>
 <p>VectorDB provides two utility methods for adding items to the database: <code>vectordb.add_instance</code> or <code>vectordb.add_text</code>. Note that for adding the instance, you need to provide the <code>get_vectordb_text</code> and an optional <code>get_vectordb_metadata</code> methods.</p>
-<h3 id="1-adding-model-instances">1. Adding Model Instances</h3>
+<h3 id="1-adding-model-instances"><a class="toclink" href="#1-adding-model-instances">1. Adding Model Instances</a></h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="n">post1</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;post1&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;post1 description&quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user1</span><span class="p">)</span> <span class="c1"># provide valid user</span>
 </span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>
 </span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="c1"># add to vector database</span>
 </span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="n">vectordb</span><span class="o">.</span><span class="n">add_instance</span><span class="p">(</span><span class="n">post1</span><span class="p">)</span>
 </span></code></pre></div>
-<h3 id="2-adding-text-to-the-model">2. Adding Text to the Model</h3>
+<h3 id="2-adding-text-to-the-model"><a class="toclink" href="#2-adding-text-to-the-model">2. Adding Text to the Model</a></h3>
 <p>To add text to the database, you can use <code>vectordb.add_text()</code>:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="n">vectordb</span><span class="o">.</span><span class="n">add_text</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;Hello text&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
 </span></code></pre></div>
 <p>The <code>text</code> and <code>id</code> are required. Additionally, the <code>id</code> must be unique, or an error will occur. <code>metadata</code> can be <code>None</code> or any valid JSON.</p>
-<h2 id="settings">Settings</h2>
+<h2 id="settings"><a class="toclink" href="#settings">Settings</a></h2>
 <p>You can customize <code>vectordb</code> by providing your settings in the <code>settings.py</code> file of your project. The following settings are available:</p>
 <div class="language-python highlight"><span class="filename">settings.py</span><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1"># settings.py</span>
 </span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="n">DJANGO_VECTOR_DB</span> <span class="o">=</span> <span class="p">{</span>
@@ -891,7 +891,7 @@
 </span><span id="__span-22-10"><a id="__codelineno-22-10" name="__codelineno-22-10" href="#__codelineno-22-10"></a>    <span class="s2">&quot;DEFAULT_MAX_BRUTEFORCE_N&quot;</span><span class="p">:</span> <span class="mi">10_000</span><span class="p">,</span> <span class="c1"># Maximum number of items to search using brute force default is 10_000. If the number of items is greater than this number, the search will be done using the HNSW index.</span>
 </span><span id="__span-22-11"><a id="__codelineno-22-11" name="__codelineno-22-11" href="#__codelineno-22-11"></a><span class="p">}</span>
 </span></code></pre></div>
-<h2 id="summary">Summary</h2>
+<h2 id="summary"><a class="toclink" href="#summary">Summary</a></h2>
 <p>Great! That was a quickstart to <code>django-vectordb</code>. We've created a blogging site and added extremely fast vector search to it. If you want to get a more in depth understanding of <code>vectordb</code> head on over to <a href="../1-project-setup/">the tutorial</a>.</p>
 
 

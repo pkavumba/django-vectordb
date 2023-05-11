@@ -528,13 +528,13 @@
   
 
 
-<h1 id="tutorial-1-project-setup">Tutorial 1: Project Setup</h1>
+<h1 id="tutorial-1-project-setup"><a class="toclink" href="#tutorial-1-project-setup">Tutorial 1: Project Setup</a></h1>
 <p>Welcome to this tutorial on <code>django-vectordb</code>! Our goal is to learn how to use <code>vectordb</code>. To make it more relatable, we'll demonstrate the features of <code>django-vectordb</code> by building a basic blogging site.</p>
 <p>In this first lesson, we'll lay the groundwork for our blogging site by creating a model to store blog posts and developing basic views for creating, viewing, and examining the details of each post. This is the most work we have to do. Integrating <code>django-vectordb</code> is very easy and straight forward.</p>
 <p>As we delve deeper, we will explore the capabilities of <code>django-vectordb</code> by integrating related blog suggestions on the details page, based on vector similarity searches. This will showcase the flexibility and easy of use and power of <code>django-vectordb</code>.</p>
 <p>In the later stages of our tutorial, we will add a search page to demonstrate the text search features. Finally, we'll configure a REST API endpoint that allows for efficient AJAX searching and remote hosting of vectordb.</p>
 <p>Now, with the introduction out of the way, let's get coding started!</p>
-<h2 id="project-setup">Project setup</h2>
+<h2 id="project-setup"><a class="toclink" href="#project-setup">Project setup</a></h2>
 <p>Create a new Django project named <code>tutorial</code>, then start a new app called <code>blog</code>.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Create a virtual environment to isolate our package dependencies locally</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>env
@@ -624,7 +624,7 @@
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>./manage.py<span class="w"> </span>runserver
 </span></code></pre></div>
 <hr />
-<h2 id="adding-sample-blogs">Adding Sample Blogs</h2>
+<h2 id="adding-sample-blogs"><a class="toclink" href="#adding-sample-blogs">Adding Sample Blogs</a></h2>
 <p>Lets add the Post model to the admins panel. Edit the <code>blog/admin.py</code></p>
 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/admin.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span>
 <span class="normal"><a href="#__codelineno-7-2">2</a></span>
@@ -637,7 +637,7 @@
 </span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5"></a><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Post</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
 <p>Now we can visit <code>http://127.0.0.1:8000/admin/blog/post/</code> and add a few Posts. Go ahead and add something</p>
-<h2 id="forms">Forms</h2>
+<h2 id="forms"><a class="toclink" href="#forms">Forms</a></h2>
 <p>In the last section we used the admin panel to add some post. Now lets add a form for post to the blogs.</p>
 <p>Create a new file in blog directory called <code>forms.py</code></p>
 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/forms.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1">1</a></span>
@@ -658,7 +658,7 @@
 </span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8"></a>        <span class="n">model</span> <span class="o">=</span> <span class="n">Post</span>
 </span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9"></a>        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">]</span>
 </span></code></pre></div></td></tr></table></div>
-<h2 id="views">Views</h2>
+<h2 id="views"><a class="toclink" href="#views">Views</a></h2>
 <p>Lets add some views for viewing our blog posts. We will keep things simple and use function based views.</p>
 <p>First create a directory called <code>templates</code> withing the blog app. Inside the <code>templates</code> directory create another folder called <code>blog</code>.</p>
 <p>Lets add a basic <code>base.html</code></p>
@@ -837,7 +837,7 @@ The template also includes a link to navigate back to the list of all blog posts
 </span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8"></a><span class="o">&lt;/</span><span class="n">form</span><span class="o">&gt;</span>
 </span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9"></a><span class="p">{</span><span class="o">%</span> <span class="n">endblock</span> <span class="o">%</span><span class="p">}</span>
 </span></code></pre></div></td></tr></table></div>
-<h2 id="urls">URLs</h2>
+<h2 id="urls"><a class="toclink" href="#urls">URLs</a></h2>
 <p>Lets now add the urls for our views. Create a new file called <code>urls.py</code> in the blog app.</p>
 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/urls.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-15-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-15-2"> 2</a></span>
@@ -877,7 +877,7 @@ The template also includes a link to navigate back to the list of all blog posts
 <p>And clicking the add button we will take us to
 <img alt="app-create" src="../img/app-create.png" /></p>
 <p>And we can view the details of the post by clicking the title.</p>
-<h2 id="summary">Summary</h2>
+<h2 id="summary"><a class="toclink" href="#summary">Summary</a></h2>
 <p>In this tutorial we create a basic project to work with Django Vector Database. We created all the basic views and forms we need to create and view posts. Next lets <a href="../2-adding-vector-search/">integrated django vector database</a></p>
 
 

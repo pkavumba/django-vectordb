@@ -329,6 +329,20 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#update-vectordb-with-existing-posts" class="md-nav__link">
+    Update VectorDB with Existing Posts
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-vectordb-to-automatically-sync-with-our-models" class="md-nav__link">
+    Configure VectorDB to Automatically Sync with our Models
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -454,6 +468,20 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#update-vectordb-with-existing-posts" class="md-nav__link">
+    Update VectorDB with Existing Posts
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-vectordb-to-automatically-sync-with-our-models" class="md-nav__link">
+    Configure VectorDB to Automatically Sync with our Models
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -472,7 +500,7 @@
   
 
 
-<h1 id="tutorial-2-integrating-django-vector-database-in-our-blog-site">Tutorial 2: Integrating Django Vector Database in our Blog Site</h1>
+<h1 id="tutorial-2-integrating-django-vector-database-in-our-blog-site"><a class="toclink" href="#tutorial-2-integrating-django-vector-database-in-our-blog-site">Tutorial 2: Integrating Django Vector Database in our Blog Site</a></h1>
 <p>Welcome to Tutorial 2! In this tutorial, we will be integrating the <code>django-vectordb</code> into our Blog Site. By the end of this tutorial, we will:</p>
 <ul>
 <li>Integrate <code>django-vectordb</code> into our project.</li>
@@ -482,7 +510,7 @@
 <li>Configure our site to display related blog recommendations using the <code>django-vectordb</code>.</li>
 </ul>
 <p>Let's get started!</p>
-<h2 id="adding-vectordb">Adding VectorDB</h2>
+<h2 id="adding-vectordb"><a class="toclink" href="#adding-vectordb">Adding VectorDB</a></h2>
 <p>If you haven't installed vectordb already install it</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;django-vectordb[standard]&quot;</span>
 </span></code></pre></div>
@@ -502,9 +530,10 @@
 <p>Finally, lets run the migrations to create the <code>vectordb</code> table.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>./manage.py<span class="w"> </span>migrate
 </span></code></pre></div>
-<h2 id="update-post-model-for-vectordb-to-automatically-extract-text-and-metadata">Update Post Model for VectorDB to Automatically Extract Text and Metadata</h2>
+<h2 id="update-post-model-for-vectordb-to-automatically-extract-text-and-metadata"><a class="toclink" href="#update-post-model-for-vectordb-to-automatically-extract-text-and-metadata">Update Post Model for VectorDB to Automatically Extract Text and Metadata</a></h2>
 <p>Next lets add to methods to our model to allow vectordb to properly index our Posts.</p>
-<p>First we need to pick the text we want to search by. For this tutorial we use both the <code>title</code> and the <code>description</code> of each blog.</p>
+<p>First we need to pick the text we want to search by. For this tutorial we use both the <code>title</code> and the <code>description</code> of each blog. We tell <code>vectordb</code> about the text we want to use through the <code>get_vectordb_text</code> method.
+Second, we need to select the metadata we want to use for filtering. For this example, we will use the <code>user_id</code>, <code>username</code> and <code>created_at</code> of each blog post. We will break down the <code>create_at</code> into <code>year</code>, <code>month</code> and <code>day</code> to demonstrate nested filtering. We tell <code>django-vectordb</code> about the metadata we want to use through the <code>get_vectordb_metadata</code> method. If we don,t provide this method, vectordb will use the django serializer to serialize the entire model. This maybe suboptimal for large models.</p>
 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/models.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-3-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-3-3"> 3</a></span>
@@ -527,7 +556,10 @@
 <span class="normal"><a href="#__codelineno-3-20">20</a></span>
 <span class="normal"><a href="#__codelineno-3-21">21</a></span>
 <span class="normal"><a href="#__codelineno-3-22">22</a></span>
-<span class="normal"><a href="#__codelineno-3-23">23</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="c1"># blog/models.py</span>
+<span class="normal"><a href="#__codelineno-3-23">23</a></span>
+<span class="normal"><a href="#__codelineno-3-24">24</a></span>
+<span class="normal"><a href="#__codelineno-3-25">25</a></span>
+<span class="normal"><a href="#__codelineno-3-26">26</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="c1"># blog/models.py</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="kn">from</span> <span class="nn">django.contrib.auth</span> <span class="kn">import</span> <span class="n">get_user_model</span>
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4"></a>
@@ -547,9 +579,125 @@
 </span></span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18"></a><span class="hll">        <span class="k">return</span> <span class="p">{</span>
 </span></span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19"></a><span class="hll">            <span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
 </span></span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20"></a><span class="hll">            <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
-</span></span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21"></a><span class="hll">            <span class="s2">&quot;created_at_year&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">created_at</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
-</span></span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22"></a><span class="hll">            <span class="s2">&quot;created_at_month&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">created_at</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
-</span></span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23"></a><span class="hll">        <span class="p">}</span>
+</span></span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21"></a><span class="hll">            <span class="s2">&quot;created_at&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22"></a><span class="hll">                <span class="s2">&quot;year&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">created_at</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+</span></span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23"></a><span class="hll">                <span class="s2">&quot;month&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">created_at</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+</span></span><span id="__span-3-24"><a id="__codelineno-3-24" name="__codelineno-3-24"></a><span class="hll">                <span class="s2">&quot;day&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">created_at</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
+</span></span><span id="__span-3-25"><a id="__codelineno-3-25" name="__codelineno-3-25"></a><span class="hll">            <span class="p">},</span>
+</span></span><span id="__span-3-26"><a id="__codelineno-3-26" name="__codelineno-3-26"></a><span class="hll">        <span class="p">}</span>
+</span></span></code></pre></div></td></tr></table></div>
+<h2 id="update-vectordb-with-existing-posts"><a class="toclink" href="#update-vectordb-with-existing-posts">Update VectorDB with Existing Posts</a></h2>
+<p>Django vector database provides a management command to update the vector database with existing models. It takes two arguments the <code>app_name</code> and the <code>model_name</code>, which in this case are <code>blog</code> and <code>Post</code>.
+Lets run this command to update the vector database with all the existing posts.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>./manage.py<span class="w"> </span>vectordb_sync<span class="w"> </span>&lt;app_name&gt;<span class="w"> </span>&lt;model_name&gt;
+</span></code></pre></div>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>./manage.py<span class="w"> </span>vectordb_sync<span class="w"> </span>blog<span class="w"> </span>Post
+</span></code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Django vector database also provides a management command for reseting the vector database. Note that this is distractive and irreversible.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>./manage.py<span class="w"> </span>vectordb_reset
+</span></code></pre></div>
+</div>
+<h2 id="configure-vectordb-to-automatically-sync-with-our-models"><a class="toclink" href="#configure-vectordb-to-automatically-sync-with-our-models">Configure VectorDB to Automatically Sync with our Models</a></h2>
+<p>Next we need to configure our site to automatically sync with the vector database whenever we <code>create</code>, <code>update</code> or <code>delete</code> posts. We do this by adding a <code>post_save</code> and <code>post_delete</code> signal to our <code>Post</code> model. We will use a shortcut, <code>autosync_model_to_vectordb</code>, provide by django vector database to register the <code>post_save</code> and <code>post_delete</code> signals.</p>
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/apps.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-7-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-7-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-7-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-7-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-7-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-7-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-7-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-7-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-7-10">10</a></span>
+<span class="normal"><a href="#__codelineno-7-11">11</a></span>
+<span class="normal"><a href="#__codelineno-7-12">12</a></span>
+<span class="normal"><a href="#__codelineno-7-13">13</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">AppConfig</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2"></a>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3"></a>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4"></a><span class="k">class</span> <span class="nc">BlogConfig</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">):</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5"></a>    <span class="n">default_auto_field</span> <span class="o">=</span> <span class="s2">&quot;django.db.models.BigAutoField&quot;</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6"></a>    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;blog&quot;</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7"></a>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8"></a><span class="hll">    <span class="k">def</span> <span class="nf">ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9"></a><span class="hll">        <span class="kn">from</span> <span class="nn">vectordb.shortcuts</span> <span class="kn">import</span> <span class="n">autosync_model_to_vectordb</span>
+</span></span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10"></a><span class="hll">
+</span></span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11"></a><span class="hll">        <span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Post</span>
+</span></span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12"></a><span class="hll">
+</span></span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13"></a><span class="hll">        <span class="n">autosync_model_to_vectordb</span><span class="p">(</span><span class="n">Post</span><span class="p">)</span>
+</span></span></code></pre></div></td></tr></table></div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>While this example only considers one model (<code>Post</code>), you can add as many models as you want to django vector database method.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This auto sync depends on the <code>post_save</code> and <code>post_delete</code> signals. Thus, sync won't happen when you use bulk_create because it does not trigger the <code>post_save</code> signal. If you want to sync after using <code>bulk_create</code> you will need to manually add the instances to django vector database. Refer to the <a href="https://docs.djangoproject.com/en/4.2/ref/models/querysets/#bulk-create">django-bulk-create</a> documentation for more information.</p>
+</div>
+<p>Alternatively, you can import the following signals and register them by yourself:</p>
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/signals.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-8-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-8-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-8-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-8-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-8-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-8-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-8-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-8-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-8-10">10</a></span>
+<span class="normal"><a href="#__codelineno-8-11">11</a></span>
+<span class="normal"><a href="#__codelineno-8-12">12</a></span>
+<span class="normal"><a href="#__codelineno-8-13">13</a></span>
+<span class="normal"><a href="#__codelineno-8-14">14</a></span>
+<span class="normal"><a href="#__codelineno-8-15">15</a></span>
+<span class="normal"><a href="#__codelineno-8-16">16</a></span>
+<span class="normal"><a href="#__codelineno-8-17">17</a></span>
+<span class="normal"><a href="#__codelineno-8-18">18</a></span>
+<span class="normal"><a href="#__codelineno-8-19">19</a></span>
+<span class="normal"><a href="#__codelineno-8-20">20</a></span>
+<span class="normal"><a href="#__codelineno-8-21">21</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="c1"># blog/signals.py</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2"></a><span class="kn">from</span> <span class="nn">django.db.models.signals</span> <span class="kn">import</span> <span class="n">post_save</span><span class="p">,</span> <span class="n">post_delete</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3"></a>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4"></a><span class="kn">from</span> <span class="nn">vectordb.sync_signals</span> <span class="kn">import</span> <span class="p">(</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5"></a>    <span class="n">sync_vectordb_on_create_update</span><span class="p">,</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6"></a>    <span class="n">sync_vectordb_on_delete</span><span class="p">,</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7"></a><span class="p">)</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8"></a>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9"></a><span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Post</span>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10"></a>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11"></a><span class="n">post_save</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12"></a>    <span class="n">sync_vectordb_on_create_update</span><span class="p">,</span>
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13"></a>    <span class="n">sender</span><span class="o">=</span><span class="n">Post</span><span class="p">,</span>
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14"></a>    <span class="n">dispatch_uid</span><span class="o">=</span><span class="s2">&quot;update_vector_index_super_unique_id&quot;</span><span class="p">,</span>
+</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15"></a><span class="p">)</span>
+</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16"></a>
+</span><span id="__span-8-17"><a id="__codelineno-8-17" name="__codelineno-8-17"></a><span class="n">post_delete</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+</span><span id="__span-8-18"><a id="__codelineno-8-18" name="__codelineno-8-18"></a>    <span class="n">sync_vectordb_on_delete</span><span class="p">,</span>
+</span><span id="__span-8-19"><a id="__codelineno-8-19" name="__codelineno-8-19"></a>    <span class="n">sender</span><span class="o">=</span><span class="n">Post</span><span class="p">,</span>
+</span><span id="__span-8-20"><a id="__codelineno-8-20" name="__codelineno-8-20"></a>    <span class="n">dispatch_uid</span><span class="o">=</span><span class="s2">&quot;delete_vector_index_super_unique_id&quot;</span><span class="p">,</span>
+</span><span id="__span-8-21"><a id="__codelineno-8-21" name="__codelineno-8-21"></a><span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
+<p>If you choose to manually register the signals you will need to make the following changes to the <code>apps.py</code>:</p>
+<div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/apps.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-9-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-9-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-9-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-9-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-9-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-9-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-9-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-9-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-9-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="c1"># blog/apps.py</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2"></a><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">AppConfig</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3"></a>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4"></a>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5"></a><span class="k">class</span> <span class="nc">BlogConfig</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">):</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6"></a>    <span class="n">default_auto_field</span> <span class="o">=</span> <span class="s2">&quot;django.db.models.BigAutoField&quot;</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7"></a>    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;blog&quot;</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8"></a>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9"></a><span class="hll">    <span class="k">def</span> <span class="nf">ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10"></a><span class="hll">        <span class="kn">import</span> <span class="nn">blog.signals</span>
 </span></span></code></pre></div></td></tr></table></div>
 <p>Documentation Writing in progress -- check back soon!</p>
 

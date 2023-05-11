@@ -712,7 +712,7 @@
   
 
 
-<h1 id="django-vectordb"><a href="https://pkavumba.github.io/django-vectordb/">Django VectorDB</a></h1>
+<h1 id="django-vectordb"><a class="toclink" href="#django-vectordb"><a href="https://pkavumba.github.io/django-vectordb/">Django VectorDB</a></a></h1>
 <hr />
 <p>Django Vector DB is a powerful and flexible toolkit for adding vector similarity search to your Django applications. It is built on top of lightening fast approximate nearest neighbor search library: hnswlib.</p>
 <p>Some reasons you might want to use Django Vector DB:</p>
@@ -726,7 +726,7 @@
 <li>Out of the box support for incremental updates, allowing you to add or update data without rebuilding the entire index.</li>
 <li>Extensive documentation and support for easy implementation and troubleshooting.</li>
 </ul>
-<h2 id="requirements">Requirements</h2>
+<h2 id="requirements"><a class="toclink" href="#requirements">Requirements</a></h2>
 <hr />
 <p>Django VectorDB requires the following:</p>
 <ul>
@@ -744,7 +744,7 @@ each Python and Django series.</p>
 <li><a href="https://pypi.org/project/django-filter/">django-filters</a> - Add metadata filtering support on the API endpoint.</li>
 </ul>
 <hr />
-<h2 id="installation">Installation</h2>
+<h2 id="installation"><a class="toclink" href="#installation">Installation</a></h2>
 <p>Install using <code>pip</code>, it is recommended that you install the optional packages with:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># This will install the optional dependencies above.</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;django-vectordb[standard]&quot;</span>
@@ -770,7 +770,7 @@ each Python and Django series.</p>
 <p>Note: that the URL path can be whatever you want.</p>
 <p>This will expose endpoints for all CRUD actions (<code>/api/vectordb/</code>) and searching (<code>/api/vectordb/search/</code>).</p>
 <hr />
-<h2 id="example">Example</h2>
+<h2 id="example"><a class="toclink" href="#example">Example</a></h2>
 <p>Lets begin with a simple example for a blog post app. We will assume the app contains the following model in <code>blog/models.py</code>.</p>
 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/models.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-5-2"> 2</a></span>
@@ -794,19 +794,19 @@ each Python and Django series.</p>
 </span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10"></a>    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 </span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span>
 </span></code></pre></div></td></tr></table></div>
-<h3 id="1-working-with-the-django-vector-database">1. Working with the Django Vector Database</h3>
+<h3 id="1-working-with-the-django-vector-database"><a class="toclink" href="#1-working-with-the-django-vector-database">1. Working with the Django Vector Database</a></h3>
 <p>To begin working with VectorDB, you'll first need to import it into your project. There are two ways to do this, depending on whether you'd like to use the simple proxy to the vector models manager, <code>Vector.objects</code>, or the Vector model directly.</p>
-<h4 id="option-1-import-the-simple-proxy-recommended">Option 1: Import the simple proxy [Recommended]</h4>
+<h4 id="option-1-import-the-simple-proxy-recommended"><a class="toclink" href="#option-1-import-the-simple-proxy-recommended">Option 1: Import the simple proxy [Recommended]</a></h4>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span> <span class="nn">vectordb</span> <span class="kn">import</span> <span class="n">vectordb</span>
 </span></code></pre></div>
-<h4 id="option-2-import-the-vector-model-directly">Option 2: Import the Vector model directly</h4>
+<h4 id="option-2-import-the-vector-model-directly"><a class="toclink" href="#option-2-import-the-vector-model-directly">Option 2: Import the Vector model directly</a></h4>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span> <span class="nn">vectordb</span> <span class="kn">import</span> <span class="n">get_vectordb_model</span>
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">VectorModel</span> <span class="o">=</span> <span class="n">get_vectordb_model</span><span class="p">()</span>
 </span></code></pre></div>
 <p>With either of these imports, you'll have access to all the Django manager functions available on the object. Note that you can run the commands detailed below using <code>vectordb</code> or <code>VectorModel.objects</code>, whichever you've chosen to import. For the rest of this guide we will use <code>vectordb</code>.</p>
 <p>Now that you've imported VectorDB, it's time to dive in and explore its powerful features!</p>
-<h3 id="populating-the-vector-database">Populating the Vector Database</h3>
+<h3 id="populating-the-vector-database"><a class="toclink" href="#populating-the-vector-database">Populating the Vector Database</a></h3>
 <p>First, let's make a few updates to the model to allow VectorDB to handle most tasks for us: add <code>get_vectordb_text</code> and <code>get_vectordb_metadata</code> methods.</p>
 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/models.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-8-2"> 2</a></span>
@@ -852,7 +852,7 @@ each Python and Django series.</p>
 <p>For this example:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>./manage.py<span class="w"> </span>vectordb_sync<span class="w"> </span>blog<span class="w"> </span>Post
 </span></code></pre></div>
-<h3 id="automatically-incremental-updates">Automatically Incremental Updates</h3>
+<h3 id="automatically-incremental-updates"><a class="toclink" href="#automatically-incremental-updates">Automatically Incremental Updates</a></h3>
 <p>Making sure that your vector database is up to date can be a pain. Django VectorDB makes this easy by laveraging django a signals that will automatically update the vector database whenever you create, update or delete an instance.</p>
 <p>To enable auto sync, register the model to vectordb sync handlers in <code>apps.py</code>. The sync handlers are signals defined in <code>vectordb/sync_signals.py</code>.</p>
 <div class="language-python highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">blog/apps.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-11-1"> 1</a></span>
@@ -952,20 +952,20 @@ each Python and Django series.</p>
 </span></span></code></pre></div></td></tr></table></div>
 <p>These signals will sync the vectors when you create and delete instances</p>
 <p>Ensure that your models implement the <code>get_vectordb_text()</code> and/or <code>get_vectordb_metadata()</code> methods for proper syncing.</p>
-<h4 id="manually-populating-the-django-vector-database">Manually populating the django vector database</h4>
+<h4 id="manually-populating-the-django-vector-database"><a class="toclink" href="#manually-populating-the-django-vector-database">Manually populating the django vector database</a></h4>
 <p>In some instances, you may want to manually populate the vector database. Django vector database provides two utility methods for adding items to the database: <code>vectordb.add_instance</code> or <code>vectordb.add_text</code>. Note that for adding the instance, you need to provide the <code>get_vectordb_text</code> and an optional <code>get_vectordb_metadata</code> methods.</p>
-<h5 id="1-adding-model-instances">1. Adding Model Instances</h5>
+<h5 id="1-adding-model-instances"><a class="toclink" href="#1-adding-model-instances">1. Adding Model Instances</a></h5>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="n">post1</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;post1&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;post1 description&quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user1</span><span class="p">)</span> <span class="c1"># provide valid user</span>
 </span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
 </span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="c1"># add to vector database</span>
 </span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="n">vectordb</span><span class="o">.</span><span class="n">add_instance</span><span class="p">(</span><span class="n">post1</span><span class="p">)</span>
 </span></code></pre></div>
-<h5 id="2-adding-text-to-the-model">2. Adding Text to the Model</h5>
+<h5 id="2-adding-text-to-the-model"><a class="toclink" href="#2-adding-text-to-the-model">2. Adding Text to the Model</a></h5>
 <p>To add text to the database, you can use <code>vectordb.add_text()</code>:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="n">vectordb</span><span class="o">.</span><span class="n">add_text</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;Hello text&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
 </span></code></pre></div>
 <p>The <code>text</code> and <code>id</code> are required. Additionally, the <code>id</code> must be unique, or an error will occur. <code>metadata</code> can be <code>None</code> or any valid JSON.</p>
-<h2 id="vector-similary-search-with-django-vector-database">Vector Similary Search with Django Vector Database</h2>
+<h2 id="vector-similary-search-with-django-vector-database"><a class="toclink" href="#vector-similary-search-with-django-vector-database">Vector Similary Search with Django Vector Database</a></h2>
 <p>To search, simply call <code>vectordb.search()</code>:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="n">vectordb</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;Some text&quot;</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> <span class="c1"># k is the maximum number of results you want.</span>
 </span></code></pre></div>
@@ -983,7 +983,7 @@ each Python and Django series.</p>
 <p>Using a model instance will automatically scope the results to only instances of that type. For example, if you search by <code>post1</code> you will only get results that are instances of <code>Post</code>.</p>
 </div>
 <p>If <code>k</code> is not provided, the default value is 10.</p>
-<h2 id="metadata-filtering-with-django-vector-database">Metadata Filtering with Django Vector Database</h2>
+<h2 id="metadata-filtering-with-django-vector-database"><a class="toclink" href="#metadata-filtering-with-django-vector-database">Metadata Filtering with Django Vector Database</a></h2>
 <p>Django vector database provides a powerful way to filter on metadata, using the intuitive Django QuerySet methods.</p>
 <p>You can filter on <code>text</code> or <code>metadata</code> with the full power of Django QuerySet filtering. You can combine as many filters as needed. And since Django vector database is built on top of Django QuerySet, you can chain the filters with the search method. You can also filter on nested metadata fields.</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># scope the search to user with an id 1</span>
@@ -1020,7 +1020,7 @@ each Python and Django series.</p>
 </span></code></pre></div>
 <p>Refer to the <a href="https://docs.djangoproject.com/en/4.2/topics/db/queries/">Django documentation</a> on querying the <code>JSONField</code> for more information on filtering.</p>
 <hr />
-<h2 id="settings">Settings</h2>
+<h2 id="settings"><a class="toclink" href="#settings">Settings</a></h2>
 <p>You can customize <code>vectordb</code> by overriding one of the following settings in <code>settings.py</code> file of your project. The following settings are available:</p>
 <div class="language-python highlight"><span class="filename">settings.py</span><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1"># settings.py</span>
 </span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="n">DJANGO_VECTOR_DB</span> <span class="o">=</span> <span class="p">{</span>
@@ -1035,10 +1035,10 @@ each Python and Django series.</p>
 </span><span id="__span-22-11"><a id="__codelineno-22-11" name="__codelineno-22-11" href="#__codelineno-22-11"></a><span class="p">}</span>
 </span></code></pre></div>
 <hr />
-<h2 id="quickstart">Quickstart</h2>
+<h2 id="quickstart"><a class="toclink" href="#quickstart">Quickstart</a></h2>
 <p>Can't wait to get started? The <a href="tutorial/quickstart/">quickstart guide</a> is the fastest way to get up and running, and building APIs with REST framework.</p>
 <hr />
-<h2 id="development">Development</h2>
+<h2 id="development"><a class="toclink" href="#development">Development</a></h2>
 <p>Clone the repository</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/pkavumba/django-vectordb.git
 </span></code></pre></div>
