@@ -12,7 +12,7 @@ theme:
 
 markdown_extensions:
   - toc:
-    anchorlink: True
+      anchorlink: True
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
