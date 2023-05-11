@@ -208,9 +208,7 @@ class BlogConfig(AppConfig):
 
 This will automatically sync the vectors when you create and delete instances.
 
-!!! note
-
-    Note that signals are not called in bulk create, so you will need to sync manually when using those methods.
+Note that signals are not called in bulk create, so you will need to sync manually when using those methods.
 
 Alternatively, you can import the following signals and register them by yourself:
 
@@ -272,19 +270,66 @@ vectordb.search("Some text", k=10).only('text', 'content_object')
 
 If `k` is not provided, the default value is 10.
 
-### Filtering
+## Metadata Filtering with Django Vector Database
 
-You can filter on `text` or `metadata` with the full power of Django QuerySet filtering:
+Django vector database provides a powerful way to filter on metadata, using the intuitive Django QuerySet methods.
+
+You can filter on `text` or `metadata` with the full power of Django QuerySet filtering. You can combine as many filters as needed. And since Django vector database is built on top of Django QuerySet, you can chain the filters with the search method. You can also filter on nested metadata fields.
 
 ```python
 # scope the search to user with an id 1
 vectordb.filter(metadata__user_id=1).search("Some text", k=10)
 
 # example two with more filters
-vectordb.filter(text__icontains="Apple", metadata__title__icontains="IPhone", metadata__description__icontains="2023").search("Apple new phone", k=10)
+vectordb.filter(text__icontains="Apple",
+    metadata__title__icontains="IPhone",
+    metadata__description__icontains="2023"
+    ).search("Apple new phone", k=10)
 ```
 
-Refer to the [Django documentation](https://docs.djangoproject.com/en/4.2/topics/db/queries/) on querying the `JSONField` for more information on filtering.
+If our metadata was nested like follows:
+
+```json
+{
+  "text": "Sample text",
+  "metadata": {
+    "date": {
+      "year": 2021,
+      "month": 7,
+      "day": 20,
+      "time": {
+        "hh": 14,
+        "mm": 30,
+        "ss": 45
+      }
+    }
+  }
+}
+```
+
+We can filter on the nested fields like so:
+
+```python
+vectordb.filter(
+    metadata__date__year=2021,
+    metadata__date__time__hh=14
+    ).search("Sample text", k=10)
+```
+
+We can also use model instances instead of text:
+
+```py
+post1 = Post.objects.get(id=1)
+# Limit the search scope to a user with an id of 1
+results = vectordb.filter(metadata__user_id=1).search(post1, k=10)
+
+# Scope the results to text which contains France, belonging to user with id 1 and created in 2023
+vectordb.filter(text__icontains="Apple",
+    metadata__title__icontains="IPhone",
+    metadata__description__icontains="2023").search(post1, k=10)
+```
+
+Refer to the [Django documentation][django-queries] on querying the `JSONField` for more information on filtering.
 
 ---
 
@@ -295,11 +340,11 @@ You can provide your settings in the `settings.py` file of your project. The fol
 ```python
 # settings.py
 DJANGO_VECTOR_DB = {
-    "DEFAULT_EMBEDDING_CLASS": ..., # Default: "vectordb.embedding_functions.SentenceTransformerEncoder",
-    "DEFAULT_EMBEDDING_MODEL": ..., # Default: "all-MiniLM-L6-v2",
+    "DEFAULT_EMBEDDING_CLASS": "vectordb.embedding_functions.SentenceTransformerEncoder",
+    "DEFAULT_EMBEDDING_MODEL": "all-MiniLM-L6-v2",
     # Can be "cosine" or "l2"
-    "DEFAULT_EMBEDDING_SPACE": ..., # Default "l2"
-    "DEFAULT_EMBEDDING_DIMENSION": ..., # Default is 384 for "all-MiniLM-L6-v2"
+    "DEFAULT_EMBEDDING_SPACE": "l2"
+    "DEFAULT_EMBEDDING_DIMENSION": 384, # Default is 384 for "all-MiniLM-L6-v2"
     "DEFAULT_MAX_N_RESULTS": 10, # Number of results to return from search maximum is default is 10
     "DEFAULT_MIN_SCORE": 0.0, # Minimum score to return from search default is 0.0
     "DEFAULT_MAX_BRUTEFORCE_N": 10_000, # Maximum number of items to search using brute force default is 10_000. If the number of items is greater than this number, the search will be done using the HNSW index.
@@ -317,7 +362,7 @@ Can't wait to get started? The [quickstart guide][quickstart] is the fastest way
 Clone the repository
 
 ```bash
-$ git clone
+$ git clone https://github.com/pkavumba/django-vectordb.git
 ```
 
 Install the app in editable mode with all dev dependencies:
@@ -351,3 +396,4 @@ tox
 [docs]: https://pkavumba.github.io/django-vectordb/
 [pypi]: https://pypi.org/project/django-vectordb/
 [pypi-version]: https://img.shields.io/pypi/v/django-vectordb.svg
+[django-queries]: https://docs.djangoproject.com/en/4.2/topics/db/queries/

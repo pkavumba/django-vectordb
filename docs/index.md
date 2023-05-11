@@ -1,8 +1,8 @@
-# Django VectorDB
+# [Django VectorDB][docs]
 
 ---
 
-Django Vector DB is a powerful and flexible toolkit for adding vector search capabilities to your Django applications. It is built on top of lightening fast nearest neighbor search library: hnswlib.
+Django Vector DB is a powerful and flexible toolkit for adding vector similarity search to your Django applications. It is built on top of lightening fast approximate nearest neighbor search library: hnswlib.
 
 Some reasons you might want to use Django Vector DB:
 
@@ -84,7 +84,7 @@ This will expose endpoints for all CRUD actions (`/api/vectordb/`) and searching
 
 ## Example
 
-Lets beging with a simple example for blog posts
+Lets begin with a simple example for a blog post app. We will assume the app contains the following model in `blog/models.py`.
 
 ```python linenums="1" title="blog/models.py"
 
@@ -101,7 +101,7 @@ class Post(models.Model):
         return self.title
 ```
 
-### 1. Importing
+### 1. Working with the Django Vector Database
 
 To begin working with VectorDB, you'll first need to import it into your project. There are two ways to do this, depending on whether you'd like to use the simple proxy to the vector models manager, `Vector.objects`, or the Vector model directly.
 
@@ -161,35 +161,40 @@ For this example:
 ./manage.py vectordb_sync blog Post
 ```
 
-#### Manually adding items to the vector database
+### Automatically Incremental Updates
 
-VectorDB provides two utility methods for adding items to the database: `vectordb.add_instance` or `vectordb.add_text`. Note that for adding the instance, you need to provide the `get_vectordb_text` and an optional `get_vectordb_metadata` methods.
+Making sure that your vector database is up to date can be a pain. Django VectorDB makes this easy by laveraging django a signals that will automatically update the vector database whenever you create, update or delete an instance.
 
-##### 1. Adding Model Instances
+To enable auto sync, register the model to vectordb sync handlers in `apps.py`. The sync handlers are signals defined in `vectordb/sync_signals.py`.
 
-```python
-post1 = models.create(title="post1", description="post1 description", user=user1) # provide valid user
+```python linenums="1" title="blog/apps.py" hl_lines="8-11"
+from django.apps import AppConfig
 
-# add to vector database
-vectordb.add_instance(post1)
+
+class BlogConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "blog"
+
+    def ready(self):
+        from .models import Post
+        from vectordb.shortcuts import autosync_model_to_vectordb
+        autosync_model_to_vectordb(Post)
 ```
 
-##### 2. Adding Text to the Model
+This will automatically sync the vectors when you create and delete instances.
 
-To add text to the database, you can use `vectordb.add_text()`:
+!!! note
 
-```python
-vectordb.add_text(text="Hello text", id=3, metadata={"user_id": 1})
-```
+    Note that signals are not called in bulk create, so you will need to sync manually when using those methods.
 
-The `text` and `id` are required. Additionally, the `id` must be unique, or an error will occur. `metadata` can be `None` or any valid JSON.
+!!! info
 
-### Automatically Syncing Your Model to the vector database
+    While this example consider only one model class, you can register as many models are needed with django vector database. You can then utilize the versatile django filters to scope your searches. Note searching using a model instance automatically scopes the results to that instance type. See below for more details.
 
-To enable auto sync, import the following signals and register them with your models:
+Alternatively, you can import the following signals and register them by yourself:
 
 ```python linenums="1" title="blog/signals.py"
-# signals.py
+# blog/signals.py
 from django.db.models.signals import post_save, post_delete
 
 from vectordb.sync_signals import (
@@ -212,21 +217,10 @@ post_delete.connect(
 )
 ```
 
-You can reduce the above code by using shortcut provided by vectordb as follows
+If you choose to manually register the signals you will need to make the following changes to the `apps.py`:
 
-```python linenums="1" title="blog/signals.py"
-from vectordb.shortcuts import autosync_model_to_vectordb
-
-from .models import Post
-
-autosync_model_to_vectordb(Post)
-```
-
-This will do exactly what we did above manually. It will also set the `dispatch_uid` for you.
-
-Then import the signals in your `apps.py`
-
-```python
+```python linenums="1" title="blog/apps.py" hl_lines="9 10"
+# blog/apps.py
 from django.apps import AppConfig
 
 
@@ -238,11 +232,34 @@ class BlogConfig(AppConfig):
         import blog.signals
 ```
 
-These signals will sync the vectors when you create and delete instances. Note that signals are not called in bulk create, so you will need to sync manually when using those methods.
+These signals will sync the vectors when you create and delete instances
 
 Ensure that your models implement the `get_vectordb_text()` and/or `get_vectordb_metadata()` methods for proper syncing.
 
-### Searching
+#### Manually populating the django vector database
+
+In some instances, you may want to manually populate the vector database. Django vector database provides two utility methods for adding items to the database: `vectordb.add_instance` or `vectordb.add_text`. Note that for adding the instance, you need to provide the `get_vectordb_text` and an optional `get_vectordb_metadata` methods.
+
+##### 1. Adding Model Instances
+
+```python
+post1 = models.create(title="post1", description="post1 description", user=user1) # provide valid user
+
+# add to vector database
+vectordb.add_instance(post1)
+```
+
+##### 2. Adding Text to the Model
+
+To add text to the database, you can use `vectordb.add_text()`:
+
+```python
+vectordb.add_text(text="Hello text", id=3, metadata={"user_id": 1})
+```
+
+The `text` and `id` are required. Additionally, the `id` must be unique, or an error will occur. `metadata` can be `None` or any valid JSON.
+
+## Vector Similary Search with Django Vector Database
 
 To search, simply call `vectordb.search()`:
 
@@ -266,31 +283,56 @@ results = vectordb.search(post1, k=10)
 
 This is also a way to get related posts to `post1`. Thus, you can use `vectordb` for recommendations as well.
 
-Note: Seaching by model instances will automatically scope the results to instances of that type. For example, if you search by `post1` you will only get results that are instances of `Post`.
+!!! note
+
+    Using a model instance will automatically scope the results to only instances of that type. For example, if you search by `post1` you will only get results that are instances of `Post`.
 
 If `k` is not provided, the default value is 10.
 
-### Filtering
+## Metadata Filtering with Django Vector Database
 
-You can filter on `text` or `metadata` with the full power of Django QuerySet filtering:
+Django vector database provides a powerful way to filter on metadata, using the intuitive Django QuerySet methods.
 
-```py
+You can filter on `text` or `metadata` with the full power of Django QuerySet filtering. You can combine as many filters as needed. And since Django vector database is built on top of Django QuerySet, you can chain the filters with the search method. You can also filter on nested metadata fields.
+
+```python
 # scope the search to user with an id 1
 vectordb.filter(metadata__user_id=1).search("Some text", k=10)
 
 # example two with more filters
-vectordb.filter(text__icontains="Apple", metadata__title__icontains="IPhone", metadata__description__icontains="2023").search("Apple new phone", k=10)
+vectordb.filter(text__icontains="Apple",
+    metadata__title__icontains="IPhone",
+    metadata__description__icontains="2023"
+    ).search("Apple new phone", k=10)
 ```
 
-We can also use model instances instead of text:
+If our metadata was nested like follows:
 
-```py
-post1 = Post.objects.get(id=1)
-# Limit the search scope to a user with an id of 1
-results = vectordb.filter(metadata__user_id=1).search(post1, k=10)
+```json
+{
+  "text": "Sample text",
+  "metadata": {
+    "date": {
+      "year": 2021,
+      "month": 7,
+      "day": 20,
+      "time": {
+        "hh": 14,
+        "mm": 30,
+        "ss": 45
+      }
+    }
+  }
+}
+```
 
-# Scope the results to text which contains France, belonging to user with id 1 and created in 2023
-vectordb.filter(text__icontains="Apple", metadata__title__icontains="IPhone", metadata__description__icontains="2023").search(post1, k=10)
+We can filter on the nested fields like so:
+
+```python
+vectordb.filter(
+    metadata__date__year=2021,
+    metadata__date__time__hh=14
+    ).search("Sample text", k=10)
 ```
 
 Refer to the [Django documentation](https://docs.djangoproject.com/en/4.2/topics/db/queries/) on querying the `JSONField` for more information on filtering.
@@ -299,16 +341,16 @@ Refer to the [Django documentation](https://docs.djangoproject.com/en/4.2/topics
 
 ## Settings
 
-You can customize `vectordb` by providing your settings in the `settings.py` file of your project. The following settings are available:
+You can customize `vectordb` by overriding one of the following settings in `settings.py` file of your project. The following settings are available:
 
-```python
+```python title="settings.py"
 # settings.py
 DJANGO_VECTOR_DB = {
-    "DEFAULT_EMBEDDING_CLASS": ..., # Default: "vectordb.embedding_functions.SentenceTransformerEncoder",
-    "DEFAULT_EMBEDDING_MODEL": ..., # Default: "all-MiniLM-L6-v2",
+    "DEFAULT_EMBEDDING_CLASS": "vectordb.embedding_functions.SentenceTransformerEncoder",
+    "DEFAULT_EMBEDDING_MODEL": "all-MiniLM-L6-v2",
     # Can be "cosine" or "l2"
-    "DEFAULT_EMBEDDING_SPACE": ..., # Default "l2"
-    "DEFAULT_EMBEDDING_DIMENSION": ..., # Default is 384 for "all-MiniLM-L6-v2"
+    "DEFAULT_EMBEDDING_SPACE": "l2"
+    "DEFAULT_EMBEDDING_DIMENSION": 384, # Default is 384 for "all-MiniLM-L6-v2"
     "DEFAULT_MAX_N_RESULTS": 10, # Number of results to return from search maximum is default is 10
     "DEFAULT_MIN_SCORE": 0.0, # Minimum score to return from search default is 0.0
     "DEFAULT_MAX_BRUTEFORCE_N": 10_000, # Maximum number of items to search using brute force default is 10_000. If the number of items is greater than this number, the search will be done using the HNSW index.
@@ -328,7 +370,7 @@ Can't wait to get started? The [quickstart guide][quickstart] is the fastest way
 Clone the repository
 
 ```bash
-$ git clone
+$ git clone https://github.com/pkavumba/django-vectordb.git
 ```
 
 Install the app in editable mode with all dev dependencies:
@@ -359,3 +401,4 @@ tox
 [hnswlib]: https://github.com/nmslib/hnswlib
 [drf]: https://www.django-rest-framework.org
 [django-filters]: https://pypi.org/project/django-filter/
+[docs]: https://pkavumba.github.io/django-vectordb/
