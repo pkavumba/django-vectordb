@@ -224,6 +224,7 @@ User = get_user_model()
 user = User.objects.first()
 
 post = Post(title="A Culinary Journey", description="A journey through France", user=user)
+post.save()
 ```
 
 Now run the app
