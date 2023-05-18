@@ -13,17 +13,17 @@
         <link rel="canonical" href="https://github.com/pkavumba/django-vectordb/tutorial/4-manually-updating-vector-database/">
       
       
-        <link rel="prev" href="../3-manually-updating-vector-database/">
+        <link rel="prev" href="../3-automatically-updating-vector-database/">
       
       
-        <link rel="next" href="../5-automatic-syncing/">
+        <link rel="next" href="../5-vector-search/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
     
     
       
-        <title>4 - Manually Updating Vector Database - Django Vector Database</title>
+        <title>4 - Manually Updating Django Vector Database - Django Vector Database</title>
       
     
     
@@ -65,7 +65,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#coming-soon" class="md-skip">
+        <a href="#tutorial-4-manually-updating-the-django-vector-database" class="md-skip">
           Skip to content
         </a>
       
@@ -100,7 +100,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              4 - Manually Updating Vector Database
+              4 - Manually Updating Django Vector Database
             
           </span>
         </div>
@@ -296,8 +296,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../3-manually-updating-vector-database/" class="md-nav__link">
-        3 - Manually Updating Vector Database
+      <a href="../3-automatically-updating-vector-database/" class="md-nav__link">
+        3 - Automatically Updating Django Vector Database
       </a>
     </li>
   
@@ -316,14 +316,16 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          4 - Manually Updating Vector Database
+          4 - Manually Updating Django Vector Database
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        4 - Manually Updating Vector Database
+        4 - Manually Updating Django Vector Database
       </a>
       
         
@@ -331,6 +333,8 @@
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
+  
+    
   
   
     <label class="md-nav__title" for="__toc">
@@ -340,8 +344,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#coming-soon" class="md-nav__link">
-    Coming Soon
+  <a href="#adding-model-instances" class="md-nav__link">
+    Adding Model Instances
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-text-to-the-model" class="md-nav__link">
+    Adding Text to the Model
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    Summary
   </a>
   
 </li>
@@ -361,8 +379,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../5-automatic-syncing/" class="md-nav__link">
-        5 - Automatically Syncing Our Models to Vector Database
+      <a href="../5-vector-search/" class="md-nav__link">
+        5 - Vector Searching
       </a>
     </li>
   
@@ -375,22 +393,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../6-vector-search/" class="md-nav__link">
-        6 - Vector Searching
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../7-adding-api-endpoint/" class="md-nav__link">
-        7 - Adding a Vector Search Endpoint
+      <a href="../6-adding-api-endpoint/" class="md-nav__link">
+        6 - Adding a Vector Search Endpoint
       </a>
     </li>
   
@@ -420,6 +424,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -428,8 +434,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#coming-soon" class="md-nav__link">
-    Coming Soon
+  <a href="#adding-model-instances" class="md-nav__link">
+    Adding Model Instances
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-text-to-the-model" class="md-nav__link">
+    Adding Text to the Model
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    Summary
   </a>
   
 </li>
@@ -452,9 +472,25 @@
   
 
 
-  <h1>4 - Manually Updating Vector Database</h1>
-
-<h2 id="coming-soon"><a class="toclink" href="#coming-soon">Coming Soon</a></h2>
+<h1 id="tutorial-4-manually-updating-the-django-vector-database"><a class="toclink" href="#tutorial-4-manually-updating-the-django-vector-database">Tutorial 4: Manually Updating the Django Vector Database</a></h1>
+<p>Introduction: In our <a href="../3-automatically-updating-vector-database/">previous tutorial</a>, we explored how to automatically update the vector database. In this tutorial, we will learn how to manually update the vector database. This can be particularly useful when you want to add items to the database.</p>
+<p>VectorDB offers two utility methods for adding items to the database: <code>vectordb.add_instance</code> and <code>vectordb.add_text</code>. It is important to note that when adding an instance, you need to provide the <code>get_vectordb_text</code> method and an optional <code>get_vectordb_metadata</code> method.</p>
+<h2 id="adding-model-instances"><a class="toclink" href="#adding-model-instances">Adding Model Instances</a></h2>
+<p>To manually add a django model instance to the vector database, you can use the following code:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">post1</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;post1&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;post1 description&quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user1</span><span class="p">)</span> <span class="c1"># provide a valid user</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Add the instance to the vector database</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">vectordb</span><span class="o">.</span><span class="n">add_instance</span><span class="p">(</span><span class="n">post1</span><span class="p">)</span>
+</span></code></pre></div>
+<h2 id="adding-text-to-the-model"><a class="toclink" href="#adding-text-to-the-model">Adding Text to the Model</a></h2>
+<p>If you want to add text to the database, you can use the <code>vectordb.add_text()</code> method:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">vectordb</span><span class="o">.</span><span class="n">add_text</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;Hello text&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+</span></code></pre></div>
+<p>Both the <code>text</code> and <code>id</code> parameters are required when using this method. Additionally, the <code>id</code> must be unique; otherwise, an error will occur. The <code>metadata</code> parameter can be set to <code>None</code> or any valid JSON.</p>
+<p>By following these steps, you can manually update the Django vector database with new instances and text. This flexibility allows you to have more control over the data in our database and ensures that you can add items that may not be automatically included.</p>
+<h2 id="summary"><a class="toclink" href="#summary">Summary</a></h2>
+<p>In this tutorial, we learned how to manually update the Django vector database by adding model instances and text. We explored the utility methods <code>vectordb.add_instance</code> and <code>vectordb.add_text</code>, which allow for greater control over the data in the database. This flexibility is particularly useful when you want to add items that may not be automatically included in the database.</p>
+<p>In the <a href="../5-vector-search/">next tutorial</a>, we will dive into performing vector similarity searches using the Django vector database. This powerful feature will enable you to find similar items in our database based on their vector representations, further enhancing the capabilities of our Django application. Stay tuned!</p>
 
 
 
