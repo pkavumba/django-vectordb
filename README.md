@@ -101,7 +101,8 @@ Lets beging with a simple example for blog posts
 ```python
 
 from django.db import models
-User = get_user_model() #import get_user_model first
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 class Post(models.Model):
     title = models.CharField(max_length=100)
@@ -140,6 +141,7 @@ First, let's make a few updates to the model to allow VectorDB to handle most ta
 
 ```python
 from django.db import models
+from django.contrib.auth import get_user_model
 User = get_user_model()
 
 class Post(models.Model):
