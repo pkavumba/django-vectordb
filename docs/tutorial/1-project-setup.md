@@ -294,12 +294,6 @@ This wraps up the boilerplate necessary for testing the Django vector database. 
 ./manage.py runserver
 ```
 
-When we visit [https://127.0.0.1/][app-index] we will see
-![app-index](../img/app-index.png)
-
-And clicking the add button we will take us to
-![app-create](../img/app-create.png)
-
 And we can view the details of the post by clicking the title.
 
 ## Summary

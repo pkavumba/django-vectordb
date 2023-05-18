@@ -1,6 +1,6 @@
-# Tutorial 2: Integrating Django Vector Database in our Blog Site
+# Tutorial 2: Integrating Django Vector Database
 
-Welcome to Tutorial 2! In this tutorial, we will be integrating the `django-vectordb` into our Blog Site. By the end of this tutorial, we will:
+Welcome to Tutorial 2! In the [previous tutorial][previous-tutorial], we setup our Blog Post project that we will use for the rest of the tutorial to demonstrate the feature of `django-vectordb`. In this tutorial, we will integrate `django-vectordb` into our Blog Site. By the end of this tutorial, we will:
 
 - Integrate `django-vectordb` into our project.
 - Update our Post model to allow `django-vectordb` to automatically extract the text for vector search, as well as any metadata we want to filter on.
@@ -10,9 +10,9 @@ Welcome to Tutorial 2! In this tutorial, we will be integrating the `django-vect
 
 Let's get started!
 
-## Adding VectorDB
+## Adding VectorDB to the Project
 
-If you haven't installed vectordb already install it
+If you haven't installed vectordb already, install it with the following command:
 
 ```bash
 pip install "django-vectordb[standard]"
@@ -97,75 +97,10 @@ Lets run this command to update the vector database with all the existing posts.
     ./manage.py vectordb_reset
     ```
 
-## Configure VectorDB to Automatically Sync with our Models
+## Summary
 
-Next we need to configure our site to automatically sync with the vector database whenever we `create`, `update` or `delete` posts. We do this by adding a `post_save` and `post_delete` signal to our `Post` model. We will use a shortcut, `autosync_model_to_vectordb`, provide by django vector database to register the `post_save` and `post_delete` signals.
-
-```python title="blog/apps.py" linenums="1" hl_lines="8-14"
-from django.apps import AppConfig
-
-
-class BlogConfig(AppConfig):
-    default_auto_field = "django.db.models.BigAutoField"
-    name = "blog"
-
-    def ready(self):
-        from vectordb.shortcuts import autosync_model_to_vectordb
-
-        from .models import Post
-
-        autosync_model_to_vectordb(Post)
-```
-
-!!! info
-
-    While this example only considers one model (`Post`), you can add as many models as you want to django vector database method.
-
-!!! note
-
-    This auto sync depends on the `post_save` and `post_delete` signals. Thus, sync won't happen when you use bulk_create because it does not trigger the `post_save` signal. If you want to sync after using `bulk_create` you will need to manually add the instances to django vector database. Refer to the [django-bulk-create] documentation for more information.
-
-Alternatively, you can import the following signals and register them by yourself:
-
-```python linenums="1" title="blog/signals.py"
-# blog/signals.py
-from django.db.models.signals import post_save, post_delete
-
-from vectordb.sync_signals import (
-    sync_vectordb_on_create_update,
-    sync_vectordb_on_delete,
-)
-
-from .models import Post
-
-post_save.connect(
-    sync_vectordb_on_create_update,
-    sender=Post,
-    dispatch_uid="update_vector_index_super_unique_id",
-)
-
-post_delete.connect(
-    sync_vectordb_on_delete,
-    sender=Post,
-    dispatch_uid="delete_vector_index_super_unique_id",
-)
-```
-
-If you choose to manually register the signals you will need to make the following changes to the `apps.py`:
-
-```python linenums="1" title="blog/apps.py" hl_lines="9 10"
-# blog/apps.py
-from django.apps import AppConfig
-
-
-class BlogConfig(AppConfig):
-    default_auto_field = "django.db.models.BigAutoField"
-    name = "blog"
-
-    def ready(self):
-        import blog.signals
-```
-
-Documentation Writing in progress -- check back soon!
+In this tutorial, we successfully integrated the Django vector database into our blog post project. Additionally, we synced our existing blog posts with the Django vector database using the `vectordb_sync` management command. In the [upcoming tutorial][next-tutorial], we will set up our blog post app to automatically synchronize with the Django vector database whenever we `create`, `update`, or `delete` blog posts.
 
 [django-bulk-create]: https://docs.djangoproject.com/en/4.2/ref/models/querysets/#bulk-create
+[previous-tutorial]: 1-project-setup.md
+[next-tutorial]: 3-automatically-updating-vector-database.md

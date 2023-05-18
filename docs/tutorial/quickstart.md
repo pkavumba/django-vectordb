@@ -212,10 +212,27 @@ class BlogConfig(AppConfig):
 Now we can run the development server again
 
 ```bash
+./manage.py shell
+```
+
+```python
+from blog.models import Post
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+user = User.objects.first()
+
+post = Post(title="A Culinary Journey", description="A journey through France", user=user)
+```
+
+Now run the app
+
+```bash
 ./manage.py runserver
 ```
 
-Visit [http://127.0.0.1:8000/admin/blog/post/][admin-post] and try adding a new post. You will notice that it automatically syncs with the vector database at [http://127.0.0.1:8000/admin/vectordb/vector/][admin-vectordb]. If you attempt to delete a post, it will also be automatically removed from the vector database. All of these features are provided out-of-the-box by `vectordb`, making the process seamless and efficient.
+Now, when you visit the Django Vector Database Admin Panel at [http://127.0.0.1:8000/admin/vectordb/vector/][admin-vectordb], you'll notice that the new post has been automatically added to the vector database. Similarly, if you try to delete a post, it will be automatically removed from the vector database as well. All these features come built-in with `vectordb`, ensuring a seamless and efficient experience.
 
 ---
 
