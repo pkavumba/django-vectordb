@@ -216,49 +216,7 @@ This will automatically sync the vectors when you create and delete instances.
 
 Note that signals are not called in bulk create, so you will need to sync manually when using those methods.
 
-Alternatively, you can import the following signals and register them by yourself:
-
-```python
-# signals.py
-from django.db.models.signals import post_save, post_delete
-
-from vectordb.sync_signals import (
-    sync_vectordb_on_create_update,
-    sync_vectordb_on_delete,
-)
-
-from .models import Post
-
-post_save.connect(
-    sync_vectordb_on_create_update,
-    sender=Post,
-    dispatch_uid="update_vector_index_super_unique_id",
-)
-
-post_delete.connect(
-    sync_vectordb_on_delete,
-    sender=Post,
-    dispatch_uid="delete_vector_index_super_unique_id",
-)
-```
-
-Then import the signals in your `apps.py`
-
-```python
-from django.apps import AppConfig
-
-
-class BlogConfig(AppConfig):
-    default_auto_field = "django.db.models.BigAutoField"
-    name = "blog"
-
-    def ready(self):
-        import blog.signals
-```
-
-These signals will sync the vectors when you create and delete instances. Note that signals are not called in bulk create, so you will need to sync manually when using those methods.
-
-Ensure that your models implement the `get_vectordb_text()` and/or `get_vectordb_metadata()` methods for proper syncing.
+Ensure that your models implement the `get_vectordb_text()` and/or `get_vectordb_metadata()` methods.
 
 ### Searching
 
