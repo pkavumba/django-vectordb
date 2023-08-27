@@ -308,8 +308,7 @@ You can provide your settings in the `settings.py` file of your project. The fol
 DJANGO_VECTOR_DB = {
     "DEFAULT_EMBEDDING_CLASS": "vectordb.embedding_functions.SentenceTransformerEncoder",
     "DEFAULT_EMBEDDING_MODEL": "all-MiniLM-L6-v2",
-    # Can be "cosine" or "l2"
-    "DEFAULT_EMBEDDING_SPACE": "l2"
+    "DEFAULT_EMBEDDING_SPACE": "l2", # Can be "cosine" or "l2"
     "DEFAULT_EMBEDDING_DIMENSION": 384, # Default is 384 for "all-MiniLM-L6-v2"
     "DEFAULT_MAX_N_RESULTS": 10, # Number of results to return from search maximum is default is 10
     "DEFAULT_MIN_SCORE": 0.0, # Minimum score to return from search default is 0.0
@@ -354,7 +353,7 @@ tox
 [python]: https://www.python.org
 [django]: https://www.djangoproject.com
 [numpy]: https://numpy.org
-[quickstart]: tutorial/quickstart.md
+[quickstart]: docs/tutorial/quickstart.md
 [sentence-transformers]: https://www.sbert.net
 [hnswlib]: https://github.com/nmslib/hnswlib
 [drf]: https://www.django-rest-framework.org

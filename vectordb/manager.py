@@ -34,7 +34,7 @@ class VectorManager(models.Manager):
 
         logger.info(
             "Loading the weights for the embedding model. This may take a few seconds the first"
-            " time it runs because it downloads the wieghts and caches them."
+            " time it runs because it downloads the weights and caches them."
         )
         start = time.time()
 
