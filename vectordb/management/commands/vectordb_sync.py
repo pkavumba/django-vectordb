@@ -31,7 +31,7 @@ class Command(BaseCommand):
         content_type = ContentType.objects.get_for_model(model)
         vector_instances = Vector.objects.filter(content_type=content_type)
         have_been_deleted_qs = vector_instances.exclude(
-            object_id__in=instances.values_list("pk", flat=True)
+            object_id__in=map(str, instances.values_list("pk", flat=True))
         )
 
         num_to_remove = have_been_deleted_qs.count()

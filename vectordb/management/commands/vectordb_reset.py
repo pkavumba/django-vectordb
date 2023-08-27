@@ -22,7 +22,7 @@ class Command(BaseCommand):
         # Check if the user wants to continue
         if user_input.lower() == "yes":
             self.stdout.write(self.style.SUCCESS("Resetting the vector database..."))
-            Vector.objects.all.delete()
+            Vector.objects.all().delete()
             if Vector.objects.index:
                 Vector.objects.index.reset()
         else:
