@@ -103,7 +103,7 @@ def create_vector_from_text(
     vector = manager.create(
         text=text,
         metadata=metadata,
-        embedding=embedding.astype("float32").tobytes(),
+        embedding=np.array(embedding).astype("float32").tobytes(),
         object_id=object_id,
     )
 

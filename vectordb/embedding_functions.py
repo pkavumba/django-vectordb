@@ -36,7 +36,7 @@ class SentenceTransformerEncoder:
 
 
 class OpenAIEmbeddings:
-    def __init__(self,model_name="text-embedding-ada-002"):
+    def __init__(self, model_name="text-embedding-ada-002"):
         if not hasattr(settings, "OPENAI_API_KEY"):
             raise ValueError("OPENAI_API_KEY is not set in Django settings.")
         if openai is None:
@@ -52,4 +52,4 @@ class OpenAIEmbeddings:
         return response["data"][0]["embedding"]
 
     def __call__(self, text):
-        return self.get_embedding(text, self.model)
+        return self.get_embedding(text)
