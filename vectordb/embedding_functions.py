@@ -54,4 +54,6 @@ class OpenAIEmbeddings:
         return np.array(raw_embedding, dtype=np.float32)
 
     def __call__(self, text):
+        if type(text) is list:
+            return [self.get_embedding(t) for t in text]
         return self.get_embedding(text)
