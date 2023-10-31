@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import numpy as np
 from django.conf import settings
 
 try:
@@ -49,7 +50,8 @@ class OpenAIEmbeddings:
     def get_embedding(self, text):
         text = text.replace("\n", " ")
         response = openai.Embedding.create(input=[text], model=self.model)
-        return response["data"][0]["embedding"]
+        raw_embedding = response["data"][0]["embedding"]
+        return np.array(raw_embedding, dtype=np.float32)
 
     def __call__(self, text):
         return self.get_embedding(text)
