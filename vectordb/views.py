@@ -15,7 +15,7 @@ class VectorViewSet(viewsets.ModelViewSet):
     queryset = Vector.objects.all()
     serializer_class = VectorSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ["text", "metadata"]
+    filterset_fields = ["text"]
     search_fields = ["text", "metadata"]
 
     @action(detail=False, methods=["get"], url_path="search")
