@@ -335,6 +335,12 @@ Install the app in editable mode with all dev dependencies:
 ```bash
 pip install -e .[dev]
 ```
+If you're using the Zsh shell, please execute the following command (pay attention to the quotes):
+
+```bash
+pip install -e ".[dev]"
+```
+
 
 This command will install the app and its dev dependencies specified in the `setup.cfg` file. The `-e` flag installs the package in editable mode, which means that any changes you make to the app's source code will be reflected immediately without needing to reinstall the package. The `[dev]` part tells `pip` to install the dependencies listed under the "dev" section in the `options.extras_require` of the `setup.cfg` file.
 
