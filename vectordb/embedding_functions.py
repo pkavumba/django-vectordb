@@ -44,16 +44,18 @@ class OpenAIEmbeddings:
             raise ImportError(
                 "OpenAI API is not installed. Please install openai package. Or run `$ pip install openai`"  # noqa
             )
-        openai.api_key = settings.OPENAI_API_KEY
+        from openai import OpenAI
+
+        self.client = OpenAI(api_key=settings.OPENAI_API_KEY)
         self.model = model_name
 
-    def get_embedding(self, text):
+    def get_embedding(self, text: str) -> np.ndarray:
         text = text.replace("\n", " ")
-        response = openai.Embedding.create(input=[text], model=self.model)
-        raw_embedding = response["data"][0]["embedding"]
+        response = self.client.embeddings.create(input=[text], model=self.model)
+        raw_embedding = response.data[0].embedding
         return np.array(raw_embedding, dtype=np.float32)
 
-    def __call__(self, text):
-        if type(text) is list:
+    def __call__(self, text: str | list[str]) -> np.ndarray:
+        if isinstance(text, list):
             return [self.get_embedding(t) for t in text]
         return self.get_embedding(text)
