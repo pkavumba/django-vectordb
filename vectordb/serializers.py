@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 try:
     from rest_framework import serializers
 except ImportError:

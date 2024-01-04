@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.db.models.signals import post_delete, post_save
 
 from .sync_signals import sync_vectordb_on_create_update, sync_vectordb_on_delete
