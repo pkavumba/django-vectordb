@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import numpy as np
-from django.conf import settings
 
 try:
     from sentence_transformers import SentenceTransformer
@@ -9,7 +8,8 @@ except ImportError:
     SentenceTransformer = None
 
 try:
-    import openai
+    import openai  # noqa
+    from openai_embeddings import OpenAIEmbeddings  # noqa
 except ImportError:
     openai = None
 
@@ -34,28 +34,3 @@ class SentenceTransformerEncoder:
 
     def __call__(self, texts: list[str]) -> np.ndarray:
         return self.model.encode(texts, convert_to_numpy=True)
-
-
-class OpenAIEmbeddings:
-    def __init__(self, model_name="text-embedding-ada-002"):
-        if not hasattr(settings, "OPENAI_API_KEY"):
-            raise ValueError("OPENAI_API_KEY is not set in Django settings.")
-        if openai is None:
-            raise ImportError(
-                "OpenAI API is not installed. Please install openai package. Or run `$ pip install openai`"  # noqa
-            )
-        from openai import OpenAI
-
-        self.client = OpenAI(api_key=settings.OPENAI_API_KEY)
-        self.model = model_name
-
-    def get_embedding(self, text: str) -> np.ndarray:
-        text = text.replace("\n", " ")
-        response = self.client.embeddings.create(input=[text], model=self.model)
-        raw_embedding = response.data[0].embedding
-        return np.array(raw_embedding, dtype=np.float32)
-
-    def __call__(self, text: str | list[str]) -> np.ndarray:
-        if isinstance(text, list):
-            return [self.get_embedding(t) for t in text]
-        return self.get_embedding(text)
