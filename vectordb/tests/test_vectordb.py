@@ -104,3 +104,85 @@ def test_search_filtering():
     for match in search_results:
         print(match.metadata)
         assert match.metadata["user"] == 2
+
+
+@pytest.mark.django_db
+def test_search_unwrap_arg():
+    manager = Vector.objects
+    from vectordb.models import SampleModel
+
+    manager = Vector.objects
+
+    sample_instance1 = SampleModel.objects.create(text="The green fox jumps 1")
+    sample_instance2 = SampleModel.objects.create(text="The green fox jumps 2")
+    sample_instance3 = SampleModel.objects.create(text="The person walks")
+    manager = Vector.objects
+    manager.add_instance(sample_instance1)
+    manager.add_instance(sample_instance2)
+    manager.add_instance(sample_instance3)
+
+    for idx in range(100, 130):
+        manager.add_text(
+            idx, f"The green fox jumps {idx}", {"field": "value", "user": 100}
+        )
+
+    search_results = manager.search("The green fox", k=20, unwrap=True)
+    assert (
+        len(search_results) == 2
+    )  # will only match the first two objects, unwrap drops no Model instances
+    assert isinstance(search_results, list)
+    assert isinstance(search_results[0], SampleModel)
+
+
+@pytest.mark.django_db
+def test_search_unwrap_queryset():
+    manager = Vector.objects
+    from vectordb.models import SampleModel
+
+    manager = Vector.objects
+
+    sample_instance1 = SampleModel.objects.create(text="The green fox jumps 1")
+    sample_instance2 = SampleModel.objects.create(text="The green fox jumps 2")
+    sample_instance3 = SampleModel.objects.create(text="The person walks")
+    manager = Vector.objects
+    manager.add_instance(sample_instance1)
+    manager.add_instance(sample_instance2)
+    manager.add_instance(sample_instance3)
+
+    for idx in range(100, 130):
+        manager.add_text(
+            idx, f"The green fox jumps {idx}", {"field": "value", "user": 100}
+        )
+
+    search_results = manager.search("The green fox", k=20).unwrap()
+    assert (
+        len(search_results) == 2
+    )  # will only match the first two objects, unwrap drops no Model instances
+    assert isinstance(search_results, list)
+    assert isinstance(search_results[0], SampleModel)
+
+
+@pytest.mark.django_db
+def test_search_with_content_type_filter():
+    from vectordb.models import SampleModel
+
+    manager = Vector.objects
+
+    sample_instance1 = SampleModel.objects.create(text="The green fox jumps 1")
+    sample_instance2 = SampleModel.objects.create(text="The green fox jumps 2")
+    manager = Vector.objects
+    manager.add_instance(sample_instance1)
+    manager.add_instance(sample_instance2)
+
+    for idx in range(100, 130):
+        manager.add_text(
+            idx, f"The green fox jumps {idx}", {"field": "value", "user": 100}
+        )
+
+    search_results = manager.search("green fox jumps", k=20, content_type=SampleModel)
+
+    assert len(search_results) == 2  # no text matches, only object matches
+    for match in search_results:
+        assert (
+            "user" not in match.metadata
+        )  # user metadata is only set in the add_text calls
