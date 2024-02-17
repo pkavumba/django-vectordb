@@ -249,7 +249,7 @@ results = vectordb.search("A Culinary Journey", k=10) # k represents the maximum
 print(results.search_time) # only available if search is the last method called
 ```
 
-Note that the search method returns a QuerySet with results ordered by the best match. The QuerySet will also have the search_time in seconds which only available when search is the last method called on the QuerySet. Each result item will contain the following fields: `id`, `content_object`, `object_id`, `content_type`, `text`, `embedding`, an annotated `score`, and a `vector` property that returns the `np.ndarray` representation of the embedding field, which is in `bytes`. As the search provides a `QuerySet`, you can selectively display the fields you want like this:
+Note that the search method returns a QuerySet with results ordered by the best match. The QuerySet will also have the search_time in seconds which only available when search is the last method called on the QuerySet. Each result item will contain the following fields: `id`, `content_object`, `object_id`, `content_type`, `text`, `embedding`, an annotated `distance`, and a `vector` property that returns the `np.ndarray` representation of the embedding field, which is in `bytes`. As the search provides a `QuerySet`, you can selectively display the fields you want like this:
 
 ```python
 from vectordb import vectordb
@@ -337,7 +337,7 @@ DJANGO_VECTOR_DB = {
     "DEFAULT_EMBEDDING_SPACE": ..., # Default "l2"
     "DEFAULT_EMBEDDING_DIMENSION": ..., # Default is 384 for "all-MiniLM-L6-v2"
     "DEFAULT_MAX_N_RESULTS": 10, # Number of results to return from search maximum is default is 10
-    "DEFAULT_MIN_SCORE": 0.0, # Minimum score to return from search default is 0.0
+    "DEFAULT_MIN_SCORE": 0.0, # Minimum score (distance) to return from search default is 0.0
     "DEFAULT_MAX_BRUTEFORCE_N": 10_000, # Maximum number of items to search using brute force default is 10_000. If the number of items is greater than this number, the search will be done using the HNSW index.
 }
 ```
