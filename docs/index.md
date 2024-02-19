@@ -267,7 +267,7 @@ To search, simply call `vectordb.search()`:
 vectordb.search("Some text", k=10) # k is the maximum number of results you want.
 ```
 
-Note: search method returns a query whose results are order from best match. Each item will have the following fields: `id`, `content_object`, `object_id`, `content_type`, `text`, `embedding`, annotated `score`, and a property `vector` that returns the `np.ndarray` representation of the item. Because search gives us a `QuerySet` we can choose the fiels we want to see like sos:
+Note: search method returns a query whose results are order from best match. Each item will have the following fields: `id`, `content_object`, `object_id`, `content_type`, `text`, `embedding`, annotated `distance`, and a property `vector` that returns the `np.ndarray` representation of the item. Because search gives us a `QuerySet` we can choose the fiels we want to see like sos:
 
 ```python
 vectordb.search("Some text", k=10).only('text', 'content_object')
@@ -352,7 +352,7 @@ DJANGO_VECTOR_DB = {
     "DEFAULT_EMBEDDING_SPACE": "l2"
     "DEFAULT_EMBEDDING_DIMENSION": 384, # Default is 384 for "all-MiniLM-L6-v2"
     "DEFAULT_MAX_N_RESULTS": 10, # Number of results to return from search maximum is default is 10
-    "DEFAULT_MIN_SCORE": 0.0, # Minimum score to return from search default is 0.0
+    "DEFAULT_MIN_SCORE": 0.0, # Minimum score (distance) to return from search default is 0.0
     "DEFAULT_MAX_BRUTEFORCE_N": 10_000, # Maximum number of items to search using brute force default is 10_000. If the number of items is greater than this number, the search will be done using the HNSW index.
 }
 ```
