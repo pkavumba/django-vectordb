@@ -49,49 +49,121 @@ The following packages are optional:
 
 ---
 
-## Installation
+## Quickstart
+Follow these steps to quickly get started with using `django-vectordb` in your project.
 
-Install using `pip`, it is recommended that you install the optional packages with:
+### 1. Installation
+
+#### Installing with Optional Packages
+For full functionality out-of-the-box, it's recommended to install `django-vectordb` with optional dependencies:
 
 ```bash
 # This will install the optional dependencies above.
 pip install "django-vectordb[standard]"
 ```
 
-If you dont want to install the optional packages you can run:
+#### Basic Installation
+If you prefer not to install the optional packages at the moment, you can go for a minimal setup:
 
 ```bash
 pip install django-vectordb
 ```
 
-Add `'django-vectordb'` to your `INSTALLED_APPS` setting.
+#### Update Django Settings
+Add `django-vectordb` to your Django project's settings within the `INSTALLED_APPS` configuration:
 
-```python
-INSTALLED_APPS = [
-    ...
-    'vectordb',
-]
+```diff
+  INSTALLED_APPS = [
+      ...
++     'vectordb',
+  ]
 ```
 
-Run the migrations to create the `vectordb` table
+#### Database Migration
+To create the necessary `vectordb` database tables, run the migrations:
 
 ```bash
-$ ./manage.py migrate
+./manage.py migrate
 ```
 
-If you're intending to use the API, you'll probably also want to add vectordb.urls. Add the following to your root `urls.py` file.
+### 2. Extend Your Models
+
+In your `models.py`, extend your models to include methods for vector database integration. The following adjustments can be made to a simple blog `Post` model:
+
+```diff
+# your_app/models.py
+
+from django.db import models
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
+class Post(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
+
++     def get_vectordb_text(self):
++         # Use title and description for vector search
++         return f"{self.title} \n\n {self.description}"
++
++     def get_vectordb_metadata(self):
++         # Enable filtering by any of these metadata
++         return {"title": self.title, "description": self.description, "user_id": self.user.id, "model": "post"}
+```
+
+### 3. Automate Data Syncing
+To automate the process of syncing your Django models with Vectordb every time data is created, updated, or deleted, adjust your `apps.py` as follows:
+
+```diff
+  # `your_app/apps.py`
+  from django.apps import AppConfig
+
+
+  class BlogConfig(AppConfig):
+      default_auto_field = "django.db.models.BigAutoField"
+      name = "blog"
+
+      def ready(self):
++         from .models import Post
++         from vectordb.shortcuts import autosync_model_to_vectordb
++         autosync_model_to_vectordb(Post)
+```
+
+### 4. Sync Vector Database
+Manually synchronize your Django models with the vector database to update their embeddings:
+
+```bash
+./manage.py vectordb_sync blog Post
+```
+
+### 5. Perform a Search
+Use the `vectordb.search()` function in your views or logic to perform vector search queries:
 
 ```python
-urlpatterns = [
-    ...
-    path('api/', include('vectordb.urls'))
-]
+vectordb.search("Some text", k=10) # Where `k` is the max number of results.
 ```
 
-Note: that the URL path can be whatever you want.
+If you want to get your model instances, such as `Post` model instances, simply call unwrap on the query as below
+```python
+vectordb.search("Some text", k=10).unwrap()
+```
 
-This will expose endpoints for all CRUD actions (`/api/vectordb/`) and searching (`/api/vectordb/search/`).
+Note: `unwrap` terminates the queryset because it returns `Post` objects in a python list.
 
+### 6. (Optional) Expose an API Endpoint
+If you intend to use `django-vectordb` through an API, integrating `vectordb.urls` into your project’s root `urls.py` file exposes all necessary CRUD and search functionalities:
+
+```diff
+  urlpatterns = [
+      ...
++     path('api/', include('vectordb.urls'))
+  ]
+```
+
+This will make the vectordb accessible under the specified path, offering endpoints for CRUD operations and search functionalities.
 ---
 
 ## Example
@@ -139,7 +211,7 @@ Now that you've imported VectorDB, it's time to dive in and explore its powerful
 
 First, let's make a few updates to the model to allow VectorDB to handle most tasks for us: add `get_vectordb_text` and `get_vectordb_metadata` methods.
 
-```python
+```diff
 from django.db import models
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -152,13 +224,13 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
-    def get_vectordb_text(self):
-        # Use title and description for vector search
-        return f"{self.title} -- {self.description}"
-
-    def get_vectordb_metadata(self):
-        # Enable filtering by any of these metadata
-        return {"title": self.title, "description": self.description, "user_id": self.user.id, "model": "post"}
++    def get_vectordb_text(self):
++        # Use title and description for vector search
++        return f"{self.title} -- {self.description}"
++
++    def get_vectordb_metadata(self):
++        # Enable filtering by any of these metadata
++        return {"title": self.title, "description": self.description, "user_id": self.user.id, "model": "post"}
 ```
 
 In an existing project, you can run the `vectordb_sync` management command to add all items to the database.
@@ -200,7 +272,7 @@ The `text` and `id` are required. Additionally, the `id` must be unique, or an e
 
 To enable auto sync, register the model to vectordb sync handlers in `apps.py`. The sync handlers are signals defined in `vectordb/sync_signals.py`.
 
-```python
+```diff
 from django.apps import AppConfig
 
 
@@ -208,10 +280,10 @@ class BlogConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "blog"
 
-    def ready(self):
-        from .models import Post
-        from vectordb.shortcuts import autosync_model_to_vectordb
-        autosync_model_to_vectordb(Post)
++    def ready(self):
++        from .models import Post
++        from vectordb.shortcuts import autosync_model_to_vectordb
++        autosync_model_to_vectordb(Post)
 ```
 
 This will automatically sync the vectors when you create and delete instances.
