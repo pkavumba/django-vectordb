@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from .models import Vector
 
 
-def sync_vectordb_on_create_update(sender, instance, created, **kwargs):
+def sync_vectordb_on_create_update(sender, instance, created=None, **kwargs):
     """
     Signal to save or update the vectordb when an instance is created or updated.
     """
