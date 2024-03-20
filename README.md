@@ -164,6 +164,7 @@ If you intend to use `django-vectordb` through an API, integrating `vectordb.url
 ```
 
 This will make the vectordb accessible under the specified path, offering endpoints for CRUD operations and search functionalities.
+
 ---
 
 ## Example
