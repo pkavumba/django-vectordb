@@ -105,13 +105,13 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
-+     def get_vectordb_text(self):
-+         # Use title and description for vector search
-+         return f"{self.title} \n\n {self.description}"
++   def get_vectordb_text(self):
++       # Use title and description for vector search
++       return f"{self.title} \n\n {self.description}"
 +
-+     def get_vectordb_metadata(self):
-+         # Enable filtering by any of these metadata
-+         return {"title": self.title, "description": self.description, "user_id": self.user.id, "model": "post"}
++   def get_vectordb_metadata(self):
++       # Enable filtering by any of these metadata
++       return {"title": self.title, "description": self.description, "user_id": self.user.id, "model": "post"}
 ```
 
 ### 3. Automate Data Syncing
@@ -225,13 +225,13 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
-+    def get_vectordb_text(self):
-+        # Use title and description for vector search
-+        return f"{self.title} -- {self.description}"
++   def get_vectordb_text(self):
++       # Use title and description for vector search
++       return f"{self.title} -- {self.description}"
 +
-+    def get_vectordb_metadata(self):
-+        # Enable filtering by any of these metadata
-+        return {"title": self.title, "description": self.description, "user_id": self.user.id, "model": "post"}
++   def get_vectordb_metadata(self):
++       # Enable filtering by any of these metadata
++       return {"title": self.title, "description": self.description, "user_id": self.user.id, "model": "post"}
 ```
 
 In an existing project, you can run the `vectordb_sync` management command to add all items to the database.
@@ -281,10 +281,10 @@ class BlogConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "blog"
 
-+    def ready(self):
-+        from .models import Post
-+        from vectordb.shortcuts import autosync_model_to_vectordb
-+        autosync_model_to_vectordb(Post)
++   def ready(self):
++       from .models import Post
++       from vectordb.shortcuts import autosync_model_to_vectordb
++       autosync_model_to_vectordb(Post)
 ```
 
 This will automatically sync the vectors when you create and delete instances.
