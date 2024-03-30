@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import numpy as np
-import openai
 from django.conf import settings
 
 from ..settings import vectordb_settings

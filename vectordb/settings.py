@@ -19,6 +19,9 @@ DEFAULTS = {
     # if you want use the openai embedding functions you need to set OPENAI_API_KEY in your django settings
     # here we will try to get the value from the environment variable OPENAI_API_KEY
     "OPENAI_API_KEY": os.environ.get("OPENAI_API_KEY", None),
+    # if you want use the cohere embedding functions you need to set COHERE_API_KEY in your django settings
+    # here we will try to get the value from the environment variable COHERE_API_KEY
+    "COHERE_API_KEY": os.environ.get("COHERE_API_KEY", None),
 }
 
 

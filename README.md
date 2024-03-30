@@ -389,6 +389,50 @@ DJANGO_VECTOR_DB = {
 }
 ```
 
+### OpenAI Configuration Changes
+
+To configure your application to use OpenAI embeddings, you will need to adjust the `settings.py` as described below. These changes specify the use of OpenAI's embedding class, an appropriate embedding dimension that aligns with your choice of model, and the model identifier itself.
+
+
+```diff
+# settings.py adjustments for OpenAI integration
+DJANGO_VECTOR_DB = {
+-    "DEFAULT_EMBEDDING_CLASS": "vectordb.embedding_functions.SentenceTransformerEncoder",
++    "DEFAULT_EMBEDDING_CLASS": "vectordb.openai_embeddings.OpenAIEmbeddings",
+-    "DEFAULT_EMBEDDING_MODEL": "all-MiniLM-L6-v2",
++    "DEFAULT_EMBEDDING_MODEL": "text-embedding-ada-002",
+     "DEFAULT_EMBEDDING_SPACE": "l2",
+-    "DEFAULT_EMBEDDING_DIMENSION": 384, # Default is 384 for "all-MiniLM-L6-v2"
++    "DEFAULT_EMBEDDING_DIMENSION": 1536, # Has to match the OpenAI model selected
+     "DEFAULT_MAX_N_RESULTS": 10,
+     "DEFAULT_MIN_SCORE": 0.0,
+     "DEFAULT_MAX_BRUTEFORCE_N": 10_000,
++    "OPENAI_API_KEY": os.environ.get("OPENAI_API_KEY", None), # Ensure this is properly set for OpenAI usage
+}
+```
+
+### Cohere Configuration Changes
+
+Similarly, to switch your embedding provider to Cohere, you will need to make the following adjustments in the `settings.py`. These changes will set Cohere as your embedding provider by specifying its embedding class, dimension, and the model you plan to use.
+
+
+```diff
+# settings.py adjustments for Cohere integration
+DJANGO_VECTOR_DB = {
+-   "DEFAULT_EMBEDDING_CLASS": "vectordb.embedding_functions.SentenceTransformerEncoder",
++   "DEFAULT_EMBEDDING_CLASS": "vectordb.cohere.embed.CohereEmbeddings",
+-   "DEFAULT_EMBEDDING_MODEL": "all-MiniLM-L6-v2",
++   "DEFAULT_EMBEDDING_MODEL": "embed-multilingual-v3.0", # Or "embed-english-v3.0" for English only
+    "DEFAULT_EMBEDDING_SPACE": "l2",
+-   "DEFAULT_EMBEDDING_DIMENSION": 384, # Default is 384 for "all-MiniLM-L6-v2"
++   "DEFAULT_EMBEDDING_DIMENSION": 1024, # Has to match the Cohere model selected
+    "DEFAULT_MAX_N_RESULTS": 10,
+    "DEFAULT_MIN_SCORE": 0.0,
+    "DEFAULT_MAX_BRUTEFORCE_N": 10_000,
++   "COHERE_API_KEY": os.environ.get("COHERE_API_KEY", None), # Ensure this is properly set for Cohere usage
+}
+```
+
 ## Quickstart
 
 Can't wait to get started? The [quickstart guide][quickstart] is the fastest way to get up and running, and building APIs with REST framework.
