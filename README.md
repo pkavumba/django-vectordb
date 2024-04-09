@@ -301,7 +301,7 @@ To search, simply call `vectordb.search()`:
 vectordb.search("Some text", k=10) # k is the maximum number of results you want.
 ```
 
-Note: search method returns a query whose results are order from best match. Each item will have the following fields: `id`, `content_object`, `object_id`, `content_type`, `text`, `embedding`, annotated `distance` (lower is better), and a property `vector` that returns the `np.ndarray` representation of the item. Because search gives us a `QuerySet` we can choose the fiels we want to see like sos:
+Note: The `search` method returns a query whose results are order from best match. Each item will have the following fields: `id`, `content_object`, `object_id`, `content_type`, `text`, `embedding`, annotated `distance` (lower is better), and a property `vector` that returns the `np.ndarray` representation of the item. Because `search` gives us a `QuerySet` we can choose the fields we want to see like sos:
 
 ```python
 vectordb.search("Some text", k=10).only('text', 'content_object')
