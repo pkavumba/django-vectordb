@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 import os
-import time
 
 from django.db import models
 
@@ -32,22 +31,12 @@ class VectorManager(models.Manager):
             vectordb_settings.DEFAULT_PERSISTENT_DIRECTORY, "vector.index"
         )  # TODO: refactor coz this depends on internal knowledge of the index class
 
-        logger.info(
-            "Loading the weights for the embedding model. This may take a few seconds the first"
-            " time it runs because it downloads the weights and caches them."
-        )
-        start = time.time()
-
         embedding_fn, embedding_dim = get_embedding_function()
         self.embedding_dim = embedding_dim
         self.embedding_fn = embedding_fn
 
         if os.path.exists(self.persistent_path):
             self.index = HNSWIndex.load(self.persistent_path)
-
-        logger.info(
-            f"Loading the weights has been completed in {time.time() - start} seconds"
-        )
 
     def get_queryset(self):
         return VectorQuerySet(self.model, using=self._db)
