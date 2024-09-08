@@ -27,6 +27,23 @@ Some reasons you might want to use Django Vector DB:
 - Out of the box support for incremental updates, allowing you to add or update data without rebuilding the entire index.
 - Extensive documentation and support for easy implementation and troubleshooting.
 
+
+> **Note:**
+>
+> Version 0.4.0 introduces the `LOAD_EMBEDDING_MODEL_ON_STARTUP` setting, which allows you to control when the embedding model weights are loaded when using the default `sentence-transformers`. While preloading the weights is advantageous in production environments, it can add a few seconds of delay during development. This option enables you to skip reloading the model weights on every startup.
+>
+> To enable this option, add the following in your `settings.py`:
+>
+> ```diff
+> # settings.py
+> {
+> + # Disable preloading weights when in DEBUG or dev mode
+> + LOAD_EMBEDDING_MODEL_ON_STARTUP: not DEBUG,
+> }
+> ```
+
+
+
 ## Requirements
 
 ---

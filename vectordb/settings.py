@@ -16,6 +16,7 @@ DEFAULTS = {
     "DEFAULT_MIN_SCORE": 0.0,
     "DEFAULT_MAX_BRUTEFORCE_N": 10_000,
     "DEFAULT_PERSISTENT_DIRECTORY": os.path.join(settings.BASE_DIR, ".vectordb"),
+    "LOAD_EMBEDDING_MODEL_ON_STARTUP": True,
     # if you want use the openai embedding functions you need to set OPENAI_API_KEY in your django settings
     # here we will try to get the value from the environment variable OPENAI_API_KEY
     "OPENAI_API_KEY": os.environ.get("OPENAI_API_KEY", None),
