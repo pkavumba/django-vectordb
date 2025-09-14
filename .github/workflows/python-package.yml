@@ -16,16 +16,35 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
     - uses: actions/checkout@v4
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
-        python-version: ${{ matrix.python }}
-    - name: Install tox
-      run: pip install tox
+        python-version: ${{ matrix.python-version }}
+    - name: Install tox and plugin
+      run: python -m pip install -U pip tox tox-gh-actions
     - name: Run tox
-      # Run tox using the version of Python in `PATH`
-      run: tox -e py
+      run: tox -q
+    - name: Combine coverage
+      run: |
+        python -m pip install coverage
+        coverage combine
+        coverage xml -o coverage.xml
+        coverage html -d htmlcov
+    - name: Upload coverage artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-${{ matrix.python-version }}
+        path: |
+          coverage.xml
+          htmlcov
+    - name: Upload to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        files: coverage.xml
+        flags: py${{ matrix.python-version }}
+        fail_ci_if_error: false
+        token: ${{ secrets.CODECOV_TOKEN }}
